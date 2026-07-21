@@ -1,54 +1,64 @@
-# Implementation Plan - Super Admin Management Module (Part 1)
+# Implementation Plan - Super Admin Management Module (Part 2)
 
-This plan covers the implementation of the Super Admin dashboard and management screens for Vendors, Shops, Customers, and Riders.
+This plan covers the completion of the Super Admin module, including Category Management, Shop Banners, Enhanced Shop/Product/Order viewing, Complaint Management, and Analytics with Charts.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Secondary Firebase Instance:** To create Vendor and Rider Auth accounts without signing out the Super Admin, a secondary Firebase app instance will be used in the `AuthService` logic.
-> - **Firestore Structure:** As requested, separate collections (`users`, `shops`, `vendors`, `customers`, `riders`) will be managed.
-> - **Part 1 Scope:** Product, Order, and Category management logic will be deferred to Part 2 as per instructions. Drawer links will be present but screens will be minimal placeholders.
+> - **Charts:** I will add `fl_chart` to `pubspec.yaml` for data visualization.
+> - **Product/Order Models:** I will implement comprehensive models for Products and Orders to support the "View All" features, even though the creation of these entities belongs to other modules.
+> - **Storage:** `StorageService` will handle image uploads to Firebase Storage for Categories and Banners.
 
 ## Proposed Changes
 
-### 1. Models
-Create data models to represent core entities:
-- `[NEW] ShopModel`: [shop_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/shop_model.dart)
-- `[NEW] VendorModel`: [vendor_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/vendor_model.dart) (Extends user data for vendors)
-- `[NEW] RiderModel`: [rider_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/rider_model.dart)
+### 1. Project Configuration
+- **[pubspec.yaml](file:///C:/Users/Husnain/Desktop/zen_mart_pro/pubspec.yaml)**: Add `fl_chart: any`.
 
-### 2. Services
-Implement Firestore and Auth logic for management:
-- `[NEW] VendorService`: CRUD and Auth creation.
-- `[NEW] ShopService`: CRUD and assignment logic.
-- `[NEW] CustomerService`: View and activation toggle.
-- `[NEW] RiderService`: CRUD.
+### 2. Models
+- `CategoryModel`: id, name, description, icon, status, createdAt.
+- `ComplaintModel`: id, customerId, customerName, subject, message, reply, status, createdAt, updatedAt.
+- `AnalyticsModel`: Stats for revenue, orders, top sellers.
+- `ProductModel`: id, name, shopId, vendorId, categoryId, price, stock, status, imageUrl, createdAt.
+- `OrderModel`: id, orderNumber, customerId, vendorId, riderId, paymentMethod, total, status, orderTime, deliveryTime.
+- `ShopBannerModel`: id, imageUrl, isActive, createdAt.
 
-### 3. Providers
-Manage state for the admin module:
-- `[NEW] VendorProvider`, `ShopProvider`, `CustomerProvider`, `RiderProvider`.
+### 3. Services
+- `CategoryService`: CRUD for global categories.
+- `ComplaintService`: Manage system complaints.
+- `AnalyticsService`: Aggregate data for reports.
+- `StorageService`: General Firebase Storage handler.
+- `ProductService`: View global product list.
+- `OrderService`: View global order list.
 
-### 4. Navigation & Routes
-- `[MODIFY] Routes`: [routes.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/routes.dart) - Add admin sub-routes.
-- `[MODIFY] AppRouter`: [app_router.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/app_router.dart) - Register new admin routes.
+### 4. Providers
+- `CategoryProvider`
+- `ComplaintProvider`
+- `AnalyticsProvider`
+- `ShopBannerProvider`
+- `AdminOrderProvider`
+- `AdminProductProvider`
 
-### 5. Super Admin UI
-Implement professional, responsive admin interface:
-- `[NEW] AdminDrawer`: Shared navigation component.
-- `[MODIFY] AdminDashboard`: [admin_dashboard.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/admin_dashboard.dart) - Add summary cards.
-- `[NEW] VendorsScreen`, `ShopsScreen`, `CustomersScreen`, `RidersScreen`.
-- `[NEW] AssignShopScreen`.
+### 5. UI Implementation
+- **Category Management**: List with search, add/edit dialogs.
+- **Shop Banner Management**: Upload/Delete banners with preview.
+- **Enhanced Tables**: Responsive DataTables for Shops, Products, and Orders.
+- **Complaint Module**: View list, detail view with reply functionality.
+- **Reports & Analytics**: Dashboard with `fl_chart` integration.
+
+### 6. Navigation
+- **[routes.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/routes.dart)**: Add routes for new admin features.
+- **[app_router.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/app_router.dart)**: Register new routes.
+- **[admin_drawer.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/admin_drawer.dart)**: Update navigation links.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `flutter analyze` to ensure no linting/compilation errors.
-- Mentally verify role-based navigation logic in `AppRouter`.
+- Run `flutter analyze` to ensure type safety and zero errors.
 
 ### Manual Verification
-- **Login as Super Admin:** Verify stats cards on dashboard.
-- **Vendor Management:** Create a vendor, verify Firestore entry and simulated Auth entry (via dialog).
-- **Shop Management:** Create a shop, assign to vendor.
-- **Customer Management:** Search and deactivate a customer.
-- **Rider Management:** Create and edit a rider.
-- **Responsive Layout:** Check drawer and dashboard layout on different screen sizes.
+- **Category CRUD**: Verify duplicate name prevention and image upload.
+- **Banner Management**: Upload a banner and verify it appears in Firestore/Storage.
+- **Data Tables**: Test search, filtering, and pagination on Shops/Products/Orders.
+- **Complaints**: Open a complaint, reply, and change status.
+- **Analytics**: Verify charts display data correctly.
+- **Responsive Layout**: Check all new screens on mobile and tablet.

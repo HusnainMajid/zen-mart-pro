@@ -56,6 +56,24 @@ class AdminDrawer extends StatelessWidget {
             route: Routes.riders,
             currentRoute: currentRoute,
           ),
+          _DrawerItem(
+            icon: Icons.analytics,
+            title: 'Analytics & Reports',
+            route: Routes.analytics,
+            currentRoute: currentRoute,
+          ),
+          _DrawerItem(
+            icon: Icons.shopping_bag,
+            title: 'All Orders',
+            route: Routes.allOrders,
+            currentRoute: currentRoute,
+          ),
+          _DrawerItem(
+            icon: Icons.inventory,
+            title: 'All Products',
+            route: Routes.allProducts,
+            currentRoute: currentRoute,
+          ),
           const Spacer(),
           const Divider(),
           ListTile(

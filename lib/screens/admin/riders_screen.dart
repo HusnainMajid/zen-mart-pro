@@ -116,9 +116,11 @@ class _RidersScreenState extends State<RidersScreen> {
         onConfirm: () async {
           try {
             await context.read<RiderProvider>().removeRider(rider.uid);
-            if (mounted) SnackBarHelper.showSuccess(context, 'Rider deleted successfully');
+            if (!context.mounted) return;
+            SnackBarHelper.showSuccess(context, 'Rider deleted successfully');
           } catch (e) {
-            if (mounted) SnackBarHelper.showError(context, e.toString());
+            if (!context.mounted) return;
+            SnackBarHelper.showError(context, e.toString());
           }
         },
       ),
@@ -133,7 +135,7 @@ class _RidersScreenState extends State<RidersScreen> {
         builder: (context, setDialogState) => AlertDialog(
           title: Text('Update Status: ${rider.fullName}'),
           content: DropdownButtonFormField<String>(
-            value: selectedStatus,
+            initialValue: selectedStatus,
             items: ['active', 'inactive', 'on_delivery']
                 .map((s) => DropdownMenuItem(value: s, child: Text(s.replaceAll('_', ' ').toUpperCase())))
                 .toList(),
@@ -146,12 +148,12 @@ class _RidersScreenState extends State<RidersScreen> {
               onPressed: () async {
                 try {
                   await context.read<RiderProvider>().updateStatus(rider.uid, selectedStatus);
-                  if (mounted) {
-                    context.pop();
-                    SnackBarHelper.showSuccess(context, 'Rider status updated');
-                  }
+                  if (!context.mounted) return;
+                  context.pop();
+                  SnackBarHelper.showSuccess(context, 'Rider status updated');
                 } catch (e) {
-                  if (mounted) SnackBarHelper.showError(context, e.toString());
+                  if (!context.mounted) return;
+                  SnackBarHelper.showError(context, e.toString());
                 }
               },
               child: const Text('Update'),
@@ -230,19 +232,17 @@ class _RidersScreenState extends State<RidersScreen> {
                                 fullName: nameController.text.trim(),
                                 phone: phoneController.text.trim(),
                               );
-                          if (mounted) {
-                            context.pop();
-                            _showCredentialsDialog(
-                              context,
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                            );
-                          }
+                          if (!context.mounted) return;
+                          context.pop();
+                          _showCredentialsDialog(
+                            context,
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
                         } catch (e) {
-                          if (mounted) {
-                            setDialogState(() => isSaving = false);
-                            SnackBarHelper.showError(context, e.toString());
-                          }
+                          if (!context.mounted) return;
+                          setDialogState(() => isSaving = false);
+                          SnackBarHelper.showError(context, e.toString());
                         }
                       }
                     },

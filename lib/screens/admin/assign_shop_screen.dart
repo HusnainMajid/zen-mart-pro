@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../core/routes/routes.dart';
 import '../../providers/shop_provider.dart';
 import '../../providers/vendor_provider.dart';
 import '../../utils/snackbar_helper.dart';
@@ -84,7 +83,7 @@ class _AssignShopScreenState extends State<AssignShopScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
-                  value: _selectedVendorId,
+                  initialValue: _selectedVendorId,
                   items: availableVendors.map((v) {
                     return DropdownMenuItem(value: v.uid, child: Text(v.fullName));
                   }).toList(),
@@ -101,7 +100,7 @@ class _AssignShopScreenState extends State<AssignShopScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.store),
                   ),
-                  value: _selectedShopId,
+                  initialValue: _selectedShopId,
                   items: availableShops.map((s) {
                     return DropdownMenuItem(value: s.id, child: Text(s.name));
                   }).toList(),
@@ -137,12 +136,12 @@ class _AssignShopScreenState extends State<AssignShopScreen> {
       // We also need to update the vendor's shopId in the vendor provider or refetch
       await context.read<VendorProvider>().fetchVendors();
       
-      if (mounted) {
-        SnackBarHelper.showSuccess(context, 'Shop assigned successfully!');
-        context.pop();
-      }
+      if (!context.mounted) return;
+      SnackBarHelper.showSuccess(context, 'Shop assigned successfully!');
+      context.pop();
     } catch (e) {
-      if (mounted) SnackBarHelper.showError(context, e.toString());
+      if (!context.mounted) return;
+      SnackBarHelper.showError(context, e.toString());
     } finally {
       if (mounted) setState(() => _isAssigning = false);
     }

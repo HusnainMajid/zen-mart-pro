@@ -79,6 +79,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           icon: Icons.people,
                           color: Colors.blue,
                           isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.vendors),
                         ),
                       ),
                       Consumer<ShopProvider>(
@@ -88,6 +89,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           icon: Icons.store,
                           color: Colors.green,
                           isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.shops),
                         ),
                       ),
                       Consumer<CustomerProvider>(
@@ -97,6 +99,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           icon: Icons.person_pin,
                           color: Colors.orange,
                           isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.customers),
                         ),
                       ),
                       Consumer<RiderProvider>(
@@ -106,7 +109,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           icon: Icons.delivery_dining,
                           color: Colors.purple,
                           isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.riders),
                         ),
+                      ),
+                      _SummaryCard(
+                        title: 'Analytics',
+                        count: 'View',
+                        icon: Icons.analytics,
+                        color: Colors.teal,
+                        onTap: () => context.push(Routes.analytics),
                       ),
                     ],
                   );
@@ -132,6 +143,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     icon: Icons.person_add,
                     label: 'Add Vendor',
                     onTap: () => context.push(Routes.vendors),
+                  ),
+                  const SizedBox(width: 12),
+                  _QuickActionButton(
+                    icon: Icons.analytics,
+                    label: 'Analytics',
+                    onTap: () => context.push(Routes.analytics),
+                  ),
+                  const SizedBox(width: 12),
+                  _QuickActionButton(
+                    icon: Icons.shopping_bag,
+                    label: 'Orders',
+                    onTap: () => context.push(Routes.allOrders),
                   ),
                 ],
               ),
@@ -162,6 +185,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           title: Text(vendor.fullName),
                           subtitle: Text(vendor.email),
                           trailing: const Icon(Icons.chevron_right),
+                          onTap: () => context.push(Routes.vendors),
                         );
                       },
                     );
@@ -182,6 +206,7 @@ class _SummaryCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final bool isLoading;
+  final VoidCallback? onTap;
 
   const _SummaryCard({
     required this.title,
@@ -189,42 +214,48 @@ class _SummaryCard extends StatelessWidget {
     required this.icon,
     required this.color,
     this.isLoading = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 28, color: color),
-            const SizedBox(height: 8),
-            if (isLoading)
-              const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-            else
-              Text(
-                count,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 28, color: color),
+              const SizedBox(height: 8),
+              if (isLoading)
+                const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              else
+                Text(
+                  count,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: count == 'View' ? 18 : null,
+                      ),
+                ),
+              const SizedBox(height: 2),
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 10,
+                      ),
+                ),
               ),
-            const SizedBox(height: 2),
-            Flexible(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10,
-                    ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -53,6 +53,7 @@ dependencies:
   flutter_svg: any
   permission_handler: any
   go_router: any
+  fl_chart: any
 
 dev_dependencies:
   flutter_test:

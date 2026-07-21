@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -16,7 +15,6 @@ class AuthProvider with ChangeNotifier {
 
   // Hardcoded Super Admin Credentials
   static const String _superAdminEmail = 'admin@zenmartpro.com';
-  static const String _superAdminPassword = 'Admin@123';
 
   // Check Authentication State on App Launch
   Future<void> checkAuthState() async {

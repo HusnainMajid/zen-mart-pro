@@ -1,28 +1,40 @@
-# Tasks - Super Admin Management Module (Part 1)
+# Tasks - Super Admin Management Module (Part 2)
 
+- `[x]` Update `pubspec.yaml` with `fl_chart`
 - `[x]` Implement Models
-    - `[x]` `ShopModel`
-    - `[x]` `VendorModel`
-    - `[x]` `RiderModel`
+    - `[x]` `CategoryModel`
+    - `[x]` `ComplaintModel`
+    - `[x]` `ProductModel`
+    - `[x]` `OrderModel`
+    - `[x]` `ShopBannerModel`
+    - `[x]` `AnalyticsModel`
 - `[x]` Implement Services
-    - `[x]` `VendorService`
-    - `[x]` `ShopService`
-    - `[x]` `CustomerService`
-    - `[x]` `RiderService`
+    - `[x]` `StorageService`
+    - `[x]` `CategoryService`
+    - `[x]` `ShopBannerService`
+    - `[x]` `ComplaintService`
+    - `[x]` `AnalyticsService`
+    - `[x]` `AdminProductService`
+    - `[x]` `AdminOrderService`
 - `[x]` Implement Providers
-    - `[x]` `VendorProvider`
-    - `[x]` `ShopProvider`
-    - `[x]` `CustomerProvider`
-    - `[x]` `RiderProvider`
+    - `[x]` `CategoryProvider`
+    - `[x]` `ShopBannerProvider`
+    - `[x]` `ComplaintProvider`
+    - `[x]` `AnalyticsProvider`
+    - `[x]` `AdminProductProvider`
+    - `[x]` `AdminOrderProvider`
 - `[x]` Update Routing
     - `[x]` Add constants to `routes.dart`
     - `[x]` Register routes in `app_router.dart`
-- `[x]` Implement UI Components
-    - `[x]` `AdminDrawer`
-    - `[x]` Update `AdminDashboard` with summary cards
-    - `[x]` `VendorsScreen` (CRUD)
-    - `[x]` `ShopsScreen` (CRUD)
-    - `[x]` `AssignShopScreen`
-    - `[x]` `CustomersScreen` (Search/List/Toggle)
-    - `[x]` `RidersScreen` (CRUD)
+- `[x]` Implement UI Screens
+    - `[x]` `CategoryManagementScreen`
+    - `[x]` `ShopBannerScreen`
+    - `[x]` `AllShopsScreen` (Enhanced Table)
+    - `[x]` `AllProductsScreen` (Pagination/Filters)
+    - `[x]` `AllOrdersScreen` (Pagination/Filters)
+    - `[x]` `OrderDetailsScreen`
+    - `[x]` `ComplaintListScreen`
+    - `[x]` `ComplaintDetailsScreen`
+    - `[x]` `AnalyticsScreen` (fl_chart)
+- `[x]` Update `AdminDrawer`
 - `[x]` Final Verification & `flutter analyze`

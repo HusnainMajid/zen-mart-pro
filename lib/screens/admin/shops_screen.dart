@@ -119,9 +119,11 @@ class _ShopsScreenState extends State<ShopsScreen> {
         onConfirm: () async {
           try {
             await context.read<ShopProvider>().removeShop(shop.id, shop.ownerId);
-            if (mounted) SnackBarHelper.showSuccess(context, 'Shop deleted successfully');
+            if (!context.mounted) return;
+            SnackBarHelper.showSuccess(context, 'Shop deleted successfully');
           } catch (e) {
-            if (mounted) SnackBarHelper.showError(context, e.toString());
+            if (!context.mounted) return;
+            SnackBarHelper.showError(context, e.toString());
           }
         },
       ),
@@ -183,7 +185,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                             .toList();
 
                         return DropdownButtonFormField<String>(
-                          value: selectedVendorId,
+                          initialValue: selectedVendorId,
                           hint: const Text('Select Owner'),
                           items: availableVendors.map((v) {
                             return DropdownMenuItem(value: v.uid, child: Text(v.fullName));
@@ -197,7 +199,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                   if (isEditing) ...[
                     const SizedBox(height: 12),
                      DropdownButtonFormField<String>(
-                        value: status,
+                        initialValue: status,
                         items: ['pending', 'active', 'inactive']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s.toUpperCase())))
                             .toList(),
@@ -240,15 +242,13 @@ class _ShopsScreenState extends State<ShopsScreen> {
                             await context.read<ShopProvider>().addShop(shopData);
                           }
 
-                          if (mounted) {
-                            context.pop();
-                            SnackBarHelper.showSuccess(context, 'Shop ${isEditing ? 'updated' : 'created'} successfully');
-                          }
+                          if (!context.mounted) return;
+                          context.pop();
+                          SnackBarHelper.showSuccess(context, 'Shop ${isEditing ? 'updated' : 'created'} successfully');
                         } catch (e) {
-                          if (mounted) {
-                            setDialogState(() => isSaving = false);
-                            SnackBarHelper.showError(context, e.toString());
-                          }
+                          if (!context.mounted) return;
+                          setDialogState(() => isSaving = false);
+                          SnackBarHelper.showError(context, e.toString());
                         }
                       }
                     },

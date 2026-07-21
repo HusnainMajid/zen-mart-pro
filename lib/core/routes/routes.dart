@@ -18,6 +18,16 @@ class Routes {
   static const String customers = '/customers';
   static const String riders = '/riders';
 
+  // Super Admin Specific Routes
+  static const String categoryManagement = '/category-management';
+  static const String shopBanners = '/shop-banners';
+  static const String allShops = '/all-shops';
+  static const String allProducts = '/all-products';
+  static const String allOrders = '/all-orders';
+  static const String complaints = '/complaints';
+  static const String complaintDetails = '/complaint-details';
+  static const String analytics = '/analytics';
+
   // Feature Routes
   static const String profile = '/profile';
   static const String products = '/products';

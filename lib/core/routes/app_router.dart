@@ -15,6 +15,17 @@ import '../../screens/admin/riders_screen.dart';
 import '../../screens/vendor/vendor_dashboard.dart';
 import '../../screens/customer/customer_home.dart';
 import '../../screens/rider/rider_dashboard.dart';
+import '../../screens/admin/all_shops_screen.dart';
+import '../../screens/admin/all_products_screen.dart';
+import '../../screens/admin/all_orders_screen.dart';
+import '../../screens/admin/order_details_screen.dart';
+import '../../screens/admin/analytics_screen.dart';
+import '../../models/order_model.dart';
+import '../../models/complaint_model.dart';
+import '../../screens/admin/category_management_screen.dart';
+import '../../screens/admin/shop_banner_screen.dart';
+import '../../screens/admin/complaint_list_screen.dart';
+import '../../screens/admin/complaint_details_screen.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -117,6 +128,50 @@ class AppRouter {
       GoRoute(
         path: Routes.riders,
         builder: (context, state) => const RidersScreen(),
+      ),
+
+      // Super Admin Features
+      GoRoute(
+        path: Routes.categoryManagement,
+        builder: (context, state) => const CategoryManagementScreen(),
+      ),
+      GoRoute(
+        path: Routes.shopBanners,
+        builder: (context, state) => const ShopBannerScreen(),
+      ),
+      GoRoute(
+        path: Routes.allShops,
+        builder: (context, state) => const AllShopsScreen(),
+      ),
+      GoRoute(
+        path: Routes.allProducts,
+        builder: (context, state) => const AllProductsScreen(),
+      ),
+      GoRoute(
+        path: Routes.allOrders,
+        builder: (context, state) => const AllOrdersScreen(),
+      ),
+      GoRoute(
+        path: Routes.orderDetails,
+        builder: (context, state) {
+          final order = state.extra as OrderModel;
+          return OrderDetailsScreen(order: order);
+        },
+      ),
+      GoRoute(
+        path: Routes.complaints,
+        builder: (context, state) => const ComplaintListScreen(),
+      ),
+      GoRoute(
+        path: Routes.complaintDetails,
+        builder: (context, state) {
+          final complaint = state.extra as ComplaintModel;
+          return ComplaintDetailsScreen(complaint: complaint);
+        },
+      ),
+      GoRoute(
+        path: Routes.analytics,
+        builder: (context, state) => const AnalyticsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

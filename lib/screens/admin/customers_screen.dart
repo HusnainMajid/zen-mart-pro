@@ -108,9 +108,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
         onConfirm: () async {
           try {
             await context.read<CustomerProvider>().toggleStatus(customer.uid, customer.isActive);
-            if (mounted) SnackBarHelper.showSuccess(context, 'Customer ${newStatus ? 'activated' : 'deactivated'}');
+            if (!context.mounted) return;
+            SnackBarHelper.showSuccess(context, 'Customer ${newStatus ? 'activated' : 'deactivated'}');
           } catch (e) {
-            if (mounted) SnackBarHelper.showError(context, e.toString());
+            if (!context.mounted) return;
+            SnackBarHelper.showError(context, e.toString());
           }
         },
       ),

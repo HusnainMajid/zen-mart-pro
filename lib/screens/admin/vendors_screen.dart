@@ -115,9 +115,11 @@ class _VendorsScreenState extends State<VendorsScreen> {
         onConfirm: () async {
           try {
             await context.read<VendorProvider>().removeVendor(vendor.uid);
-            if (mounted) SnackBarHelper.showSuccess(context, 'Vendor deleted successfully');
+            if (!context.mounted) return;
+            SnackBarHelper.showSuccess(context, 'Vendor deleted successfully');
           } catch (e) {
-            if (mounted) SnackBarHelper.showError(context, e.toString());
+            if (!context.mounted) return;
+            SnackBarHelper.showError(context, e.toString());
           }
         },
       ),
@@ -132,7 +134,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
         builder: (context, setDialogState) => AlertDialog(
           title: Text('Edit Status: ${vendor.fullName}'),
           content: DropdownButtonFormField<String>(
-            value: selectedStatus,
+            initialValue: selectedStatus,
             items: ['active', 'inactive', 'suspended']
                 .map((s) => DropdownMenuItem(value: s, child: Text(s.toUpperCase())))
                 .toList(),
@@ -145,12 +147,12 @@ class _VendorsScreenState extends State<VendorsScreen> {
               onPressed: () async {
                 try {
                   await context.read<VendorProvider>().updateStatus(vendor.uid, selectedStatus);
-                  if (mounted) {
-                    Navigator.pop(context);
-                    SnackBarHelper.showSuccess(context, 'Status updated');
-                  }
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+                  SnackBarHelper.showSuccess(context, 'Status updated');
                 } catch (e) {
-                  if (mounted) SnackBarHelper.showError(context, e.toString());
+                  if (!context.mounted) return;
+                  SnackBarHelper.showError(context, e.toString());
                 }
               },
               child: const Text('Update'),
@@ -229,19 +231,17 @@ class _VendorsScreenState extends State<VendorsScreen> {
                                 fullName: nameController.text.trim(),
                                 phone: phoneController.text.trim(),
                               );
-                          if (mounted) {
-                            context.pop();
-                            _showCredentialsDialog(
-                              context,
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                            );
-                          }
+                          if (!context.mounted) return;
+                          context.pop();
+                          _showCredentialsDialog(
+                            context,
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
                         } catch (e) {
-                          if (mounted) {
-                            setDialogState(() => isSaving = false);
-                            SnackBarHelper.showError(context, e.toString());
-                          }
+                          if (!context.mounted) return;
+                          setDialogState(() => isSaving = false);
+                          SnackBarHelper.showError(context, e.toString());
                         }
                       }
                     },

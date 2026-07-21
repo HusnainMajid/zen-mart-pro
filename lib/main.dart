@@ -9,6 +9,12 @@ import 'providers/vendor_provider.dart';
 import 'providers/shop_provider.dart';
 import 'providers/customer_provider.dart';
 import 'providers/rider_provider.dart';
+import 'providers/category_provider.dart';
+import 'providers/shop_banner_provider.dart';
+import 'providers/complaint_provider.dart';
+import 'providers/analytics_provider.dart';
+import 'providers/admin_product_provider.dart';
+import 'providers/admin_order_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,6 +77,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ShopProvider()),
         ChangeNotifierProvider(create: (_) => CustomerProvider()),
         ChangeNotifierProvider(create: (_) => RiderProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => ShopBannerProvider()),
+        ChangeNotifierProvider(create: (_) => ComplaintProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProductProvider()),
+        ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
           create: (context) => SessionProvider(context.read<AuthProvider>()),
           update: (context, auth, previous) => previous!..update(auth),
