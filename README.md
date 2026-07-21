@@ -19,8 +19,13 @@ A new Flutter project.
 - Utility helpers
 - Splash Screen with Zenvyro Labs branding
 
-## 🔄 Next Phase
+## ✅ Completed
 
+- Firebase Integration
 - Firebase Authentication
-- Role-Based Login
-- Secure Session Management
+- Customer Registration
+- Login & Logout
+- Forgot Password
+- Session Management
+- Role-Based Navigation
+- Placeholder Dashboards
