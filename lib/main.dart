@@ -4,37 +4,112 @@ import 'package:provider/provider.dart';
 import 'core/theme/theme.dart';
 import 'core/routes/app_router.dart';
 import 'providers/auth_provider.dart';
+import 'providers/session_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  bool isFirebaseInitialized = false;
   try {
-    // Note: You may need to run 'flutterfire configure' to generate firebase_options.dart
-    // or provide options here.
     await Firebase.initializeApp();
+    isFirebaseInitialized = true;
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
   }
-  runApp(const MyApp());
+
+  runApp(MyApp(isFirebaseInitialized: isFirebaseInitialized));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isFirebaseInitialized;
+  
+  const MyApp({super.key, required this.isFirebaseInitialized});
 
   @override
   Widget build(BuildContext context) {
+    if (!isFirebaseInitialized) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 64),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Configuration Error',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Firebase could not be initialized. Please check your google-services.json and internet connection.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => main(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        // Add more providers here
+        ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
+          create: (context) => SessionProvider(context.read<AuthProvider>()),
+          update: (context, auth, previous) => previous!..update(auth),
+        ),
+        ProxyProvider2<AuthProvider, SessionProvider, AppRouter>(
+          create: (context) => AppRouter(
+            context.read<AuthProvider>(),
+            context.read<SessionProvider>(),
+          ),
+          update: (context, auth, session, previous) => previous ?? AppRouter(auth, session),
+        ),
       ],
-      child: MaterialApp.router(
-        title: 'Zen Mart Pro',
-        debugShowCheckedModeBanner: false,
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
-        routerConfig: AppRouter.router,
-      ),
+      child: const ZenMartApp(),
+    );
+  }
+}
+
+class ZenMartApp extends StatefulWidget {
+  const ZenMartApp({super.key});
+
+  @override
+  State<ZenMartApp> createState() => _ZenMartAppState();
+}
+
+class _ZenMartAppState extends State<ZenMartApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize session after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<SessionProvider>().initializeApp();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final router = context.read<AppRouter>().router;
+
+    return MaterialApp.router(
+      title: 'Zen Mart Pro',
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+      routerConfig: router,
     );
   }
 }

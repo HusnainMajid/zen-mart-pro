@@ -1,33 +1,37 @@
-# Walkthrough - Zenvyro Labs Logo Integration
+# Walkthrough - Firestore Error Resolution
 
-I have integrated the Zenvyro Labs logo into the "Zen MArt Pro" application and refined the Splash Screen.
+I have updated the application to handle Firestore errors more professionally and provide you with clear instructions on how to resolve the backend configuration issues.
 
 ## Changes Made
 
-### Assets Configuration
-- **[pubspec.yaml](file:///C:/Users/Husnain/Desktop/zen_mart_pro/pubspec.yaml)**: Registered the `assets/images/` directory to allow the application to load visual assets.
+### Enhanced Data Services
+- **[firestore_service.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/services/firestore_service.dart)**:
+    - Updated error handling to catch specific `FirebaseException` codes.
+    - If a **Permission Denied** error occurs, the app now explicitly tells you to check your **Firestore Security Rules**.
+    - Added granular parsing checks to ensure that even if Firestore data is malformed, the app provides a meaningful error rather than a generic crash.
 
-### Core Constants
-- **[app_assets.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/constants/app_assets.dart)**: Defined `AppAssets.logo` to centralize the asset path management.
+### Robust Authentication Logic
+- **[auth_provider.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/providers/auth_provider.dart)**:
+    - Wrapped Firestore interactions during login and registration with specific error-handling blocks.
+    - If authentication succeeds but Firestore fails (e.g., due to rules), the app now explains this partial success to you, allowing you to debug the backend without guessing why the screen isn't changing.
 
-### UI Enhancements
-- **[splash_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/splash/splash_screen.dart)**:
-    - Replaced the placeholder icon with the professional **Zenvyro Labs** logo.
-    - Added a **"Powered by Zenvyro Labs"** footer as per branding requirements.
-    - Increased the splash screen duration to **6 seconds** to allow users to appreciate the branding.
-    - Added a smooth fade-in animation for both the logo and the footer.
-    - Included an `errorBuilder` to show a fallback icon if the asset is missing during initial development.
-    - Updated `AppAssets.logo` to use the correct `.jpeg` extension to match the actual file added to the project.
-
-## Verification Results
-
-### Manual Verification
-- The `pubspec.yaml` syntax for assets is correct.
-- The `SplashScreen` now correctly references `AppAssets.logo`.
-- The layout is centered and responsive, with the footer positioned at the bottom.
+## Backend Action Required
 
 > [!IMPORTANT]
-> Please ensure you save the logo image as `assets/images/logo.png`. The application is configured to look for the file at that specific path.
+> The "Failed to retrieve user data" error most likely means your Firestore database is in **Locked Mode**. Please update your rules in the Firebase Console:
+>
+> 1. Go to **Firestore Database** > **Rules**.
+> 2. Change the rules to allow authenticated users:
+> ```
+> service cloud.firestore {
+>   match /databases/{database}/documents {
+>     match /users/{userId} {
+>       allow read, write: if request.auth != null && request.auth.uid == userId;
+>     }
+>   }
+> }
+> ```
+> 3. Click **Publish**.
 
 ---
-**Branding Integration Complete.** The app now starts with a professional look aligned with Zenvyro Labs' identity.
+**Firestore Error Fix Complete.** The app is now ready to guide you through any backend configuration issues. Please try to login/register again, and check the SnackBar for specific instructions.

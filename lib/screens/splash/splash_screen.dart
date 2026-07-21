@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/routes/routes.dart';
 import '../../core/constants/app_assets.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,16 +22,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     _controller.forward();
-
-    _navigateToHome();
-  }
-
-  void _navigateToHome() async {
-    // Increased duration as requested
-    await Future.delayed(const Duration(seconds: 6));
-    if (mounted) {
-      context.go(Routes.home);
-    }
+    
+    // Note: Navigation is now handled automatically by AppRouter
+    // once SessionProvider.isInitialized  true.
   }
 
   @override
@@ -45,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           Center(
@@ -67,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   Text(
                     'Zen Mart Pro',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: Colors.black87,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
                         ),
@@ -87,14 +78,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   Text(
                     'Powered by',
                     style: TextStyle(
-                      color: Colors.grey,
+                      color: Colors.lightGreen,
                       fontSize: 12,
                     ),
                   ),
                   Text(
                     'Zenvyro Labs',
                     style: TextStyle(
-                      color: Colors.black54,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
