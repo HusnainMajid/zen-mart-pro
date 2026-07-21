@@ -4,14 +4,23 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+# Progress
 
-A few resources to get you started if this is your first Flutter project:
+## ✅ Completed
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Flutter project foundation
+- Clean Architecture
+- Material 3 Theme
+- Light & Dark Theme
+- GoRouter setup
+- Firebase initialization
+- Provider configuration
+- Reusable widgets
+- Utility helpers
+- Splash Screen with Zenvyro Labs branding
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🔄 Next Phase
+
+- Firebase Authentication
+- Role-Based Login
+- Secure Session Management
