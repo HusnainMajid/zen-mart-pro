@@ -1,40 +1,54 @@
-# Implementation Plan - Fix Firestore Retrieval Error
+# Implementation Plan - Super Admin Management Module (Part 1)
 
-The error "Failed to retrieve user data from Firestore" is likely caused by **Firestore Security Rules** being set to "Locked Mode" or the Firestore database not being initialized in the Firebase Console.
+This plan covers the implementation of the Super Admin dashboard and management screens for Vendors, Shops, Customers, and Riders.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> To fully fix this, you must ensure that Firestore is enabled in your Firebase Console and that the rules allow authenticated users to read/write to the `users` collection.
->
-> **Recommended Rules for Development:**
-> ```
-> service cloud.firestore {
->   match /databases/{database}/documents {
->     match /users/{userId} {
->       allow read, write: if request.auth != null && request.auth.uid == userId;
->     }
->   }
-> }
-> ```
+> - **Secondary Firebase Instance:** To create Vendor and Rider Auth accounts without signing out the Super Admin, a secondary Firebase app instance will be used in the `AuthService` logic.
+> - **Firestore Structure:** As requested, separate collections (`users`, `shops`, `vendors`, `customers`, `riders`) will be managed.
+> - **Part 1 Scope:** Product, Order, and Category management logic will be deferred to Part 2 as per instructions. Drawer links will be present but screens will be minimal placeholders.
 
 ## Proposed Changes
 
-### Data & Services
+### 1. Models
+Create data models to represent core entities:
+- `[NEW] ShopModel`: [shop_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/shop_model.dart)
+- `[NEW] VendorModel`: [vendor_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/vendor_model.dart) (Extends user data for vendors)
+- `[NEW] RiderModel`: [rider_model.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/models/rider_model.dart)
 
-#### [MODIFY] [firestore_service.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/services/firestore_service.dart)
-- Improve error handling to identify specific Firebase exceptions.
-- If a `permission-denied` error occurs, provide a clear instruction to the user about updating Firestore rules.
-- Add logging to help diagnose which specific field might be failing during `fromMap` conversion.
+### 2. Services
+Implement Firestore and Auth logic for management:
+- `[NEW] VendorService`: CRUD and Auth creation.
+- `[NEW] ShopService`: CRUD and assignment logic.
+- `[NEW] CustomerService`: View and activation toggle.
+- `[NEW] RiderService`: CRUD.
 
-### Business Logic
+### 3. Providers
+Manage state for the admin module:
+- `[NEW] VendorProvider`, `ShopProvider`, `CustomerProvider`, `RiderProvider`.
 
-#### [MODIFY] [auth_provider.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/providers/auth_provider.dart)
-- Wrap Firestore calls with more granular try-catch blocks.
-- Ensure that if Firestore is unavailable, the user is informed that their account was authenticated but their profile could not be loaded.
+### 4. Navigation & Routes
+- `[MODIFY] Routes`: [routes.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/routes.dart) - Add admin sub-routes.
+- `[MODIFY] AppRouter`: [app_router.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/core/routes/app_router.dart) - Register new admin routes.
+
+### 5. Super Admin UI
+Implement professional, responsive admin interface:
+- `[NEW] AdminDrawer`: Shared navigation component.
+- `[MODIFY] AdminDashboard`: [admin_dashboard.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/admin_dashboard.dart) - Add summary cards.
+- `[NEW] VendorsScreen`, `ShopsScreen`, `CustomersScreen`, `RidersScreen`.
+- `[NEW] AssignShopScreen`.
 
 ## Verification Plan
 
+### Automated Tests
+- Run `flutter analyze` to ensure no linting/compilation errors.
+- Mentally verify role-based navigation logic in `AppRouter`.
+
 ### Manual Verification
-- Attempt login/register: If it fails, check if the SnackBar now provides more specific guidance (e.g., "Permission Denied - Check Firestore Rules").
-- Once rules are updated in the console, verify that login/register proceeds smoothly to the dashboard.
+- **Login as Super Admin:** Verify stats cards on dashboard.
+- **Vendor Management:** Create a vendor, verify Firestore entry and simulated Auth entry (via dialog).
+- **Shop Management:** Create a shop, assign to vendor.
+- **Customer Management:** Search and deactivate a customer.
+- **Rider Management:** Create and edit a rider.
+- **Responsive Layout:** Check drawer and dashboard layout on different screen sizes.

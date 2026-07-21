@@ -5,6 +5,10 @@ import 'core/theme/theme.dart';
 import 'core/routes/app_router.dart';
 import 'providers/auth_provider.dart';
 import 'providers/session_provider.dart';
+import 'providers/vendor_provider.dart';
+import 'providers/shop_provider.dart';
+import 'providers/customer_provider.dart';
+import 'providers/rider_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,6 +67,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => VendorProvider()),
+        ChangeNotifierProvider(create: (_) => ShopProvider()),
+        ChangeNotifierProvider(create: (_) => CustomerProvider()),
+        ChangeNotifierProvider(create: (_) => RiderProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
           create: (context) => SessionProvider(context.read<AuthProvider>()),
           update: (context, auth, previous) => previous!..update(auth),

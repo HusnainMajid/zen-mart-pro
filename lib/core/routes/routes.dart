@@ -11,6 +11,13 @@ class Routes {
   static const String customerHome = '/customer-home';
   static const String riderDashboard = '/rider-dashboard';
 
+  // Admin Management Routes
+  static const String vendors = '/vendors';
+  static const String shops = '/shops';
+  static const String assignShop = '/assign-shop';
+  static const String customers = '/customers';
+  static const String riders = '/riders';
+
   // Feature Routes
   static const String profile = '/profile';
   static const String products = '/products';

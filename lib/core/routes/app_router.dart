@@ -7,6 +7,11 @@ import '../../screens/auth/login_screen.dart';
 import '../../screens/auth/signup_screen.dart';
 import '../../screens/auth/forgot_password_screen.dart';
 import '../../screens/admin/admin_dashboard.dart';
+import '../../screens/admin/vendors_screen.dart';
+import '../../screens/admin/shops_screen.dart';
+import '../../screens/admin/assign_shop_screen.dart';
+import '../../screens/admin/customers_screen.dart';
+import '../../screens/admin/riders_screen.dart';
 import '../../screens/vendor/vendor_dashboard.dart';
 import '../../screens/customer/customer_home.dart';
 import '../../screens/rider/rider_dashboard.dart';
@@ -92,6 +97,26 @@ class AppRouter {
       GoRoute(
         path: Routes.superAdminDashboard,
         builder: (context, state) => const AdminDashboard(),
+      ),
+      GoRoute(
+        path: Routes.vendors,
+        builder: (context, state) => const VendorsScreen(),
+      ),
+      GoRoute(
+        path: Routes.shops,
+        builder: (context, state) => const ShopsScreen(),
+      ),
+      GoRoute(
+        path: Routes.assignShop,
+        builder: (context, state) => const AssignShopScreen(),
+      ),
+      GoRoute(
+        path: Routes.customers,
+        builder: (context, state) => const CustomersScreen(),
+      ),
+      GoRoute(
+        path: Routes.riders,
+        builder: (context, state) => const RidersScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
