@@ -22,6 +22,15 @@ import '../../screens/vendor/vendor_order_details_screen.dart';
 import '../../screens/vendor/vendor_reviews_screen.dart';
 import '../../screens/vendor/vendor_reports_screen.dart';
 import '../../screens/customer/customer_home.dart';
+import '../../screens/customer/customer_main_nav.dart';
+import '../../screens/customer/cart_screen.dart';
+import '../../screens/customer/checkout_screen.dart';
+import '../../screens/customer/order_tracking_screen.dart';
+import '../../screens/customer/address_list_screen.dart';
+import '../../screens/customer/wishlist_screen.dart';
+import '../../screens/customer/notification_screen.dart';
+import '../../screens/customer/product_details_screen.dart';
+import '../../screens/customer/shop_details_screen.dart';
 import '../../screens/rider/rider_dashboard.dart';
 import '../../screens/admin/all_shops_screen.dart';
 import '../../screens/admin/all_products_screen.dart';
@@ -31,6 +40,7 @@ import '../../screens/admin/analytics_screen.dart';
 import '../../models/order_model.dart';
 import '../../models/complaint_model.dart';
 import '../../models/product_model.dart';
+import '../../models/shop_model.dart';
 import '../../screens/admin/category_management_screen.dart';
 import '../../screens/admin/shop_banner_screen.dart';
 import '../../screens/admin/complaint_list_screen.dart';
@@ -79,7 +89,7 @@ class AppRouter {
         return _getDashboardRoute(user.role);
       }
 
-      // 4. Role-based Access Control for Vendor Module
+      // 4. Role-based Access Control
       final role = user.role.toLowerCase();
       final location = state.matchedLocation;
 
@@ -97,6 +107,20 @@ class AppRouter {
       ];
 
       if (vendorRoutes.contains(location) && role != 'vendor') {
+        return _getDashboardRoute(role);
+      }
+
+      // Customer specific routes protection
+      final customerRoutes = [
+        Routes.customerMain,
+        Routes.cart,
+        Routes.checkout,
+        Routes.orderTracking,
+        Routes.addresses,
+        Routes.notifications,
+      ];
+
+      if (customerRoutes.contains(location) && role != 'customer') {
         return _getDashboardRoute(role);
       }
 
@@ -172,6 +196,51 @@ class AppRouter {
       GoRoute(
         path: Routes.customerHome,
         builder: (context, state) => const CustomerHome(),
+      ),
+      GoRoute(
+        path: Routes.customerMain,
+        builder: (context, state) => const CustomerMainNav(),
+      ),
+      GoRoute(
+        path: Routes.shopDetails,
+        builder: (context, state) {
+          final shop = state.extra as ShopModel;
+          return ShopDetailsScreen(shop: shop);
+        },
+      ),
+      GoRoute(
+        path: Routes.productDetails,
+        builder: (context, state) {
+          final product = state.extra as ProductModel;
+          return ProductDetailsScreen(product: product);
+        },
+      ),
+      GoRoute(
+        path: Routes.cart,
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: Routes.checkout,
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: Routes.orderTracking,
+        builder: (context, state) {
+          final order = state.extra as OrderModel?;
+          return OrderTrackingScreen(order: order);
+        },
+      ),
+      GoRoute(
+        path: Routes.addresses,
+        builder: (context, state) => const AddressListScreen(),
+      ),
+      GoRoute(
+        path: Routes.wishlist,
+        builder: (context, state) => const WishlistScreen(),
+      ),
+      GoRoute(
+        path: Routes.notifications,
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: Routes.riderDashboard,
@@ -273,11 +342,11 @@ class AppRouter {
       case 'vendor':
         return Routes.vendorDashboard;
       case 'customer':
-        return Routes.customerHome;
+        return Routes.customerMain;
       case 'rider':
         return Routes.riderDashboard;
       default:
-        return Routes.customerHome;
+        return Routes.customerMain;
     }
   }
 }

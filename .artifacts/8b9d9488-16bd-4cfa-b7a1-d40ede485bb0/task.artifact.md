@@ -1,26 +1,32 @@
-# Tasks - Vendor Module (Part 2)
+# Tasks - Complete Customer Module Implementation
 
-- `[x]` Update `pubspec.yaml` with `pdf` and `printing`
-- `[x]` Update Models
-    - `[x]` `OrderModel` expansion
-    - `[x]` `OrderItemModel` creation
-    - `[x]` `ReviewModel` creation
-    - `[x]` `SalesReportModel` creation
-- `[x]` Implement Services
-    - `[x]` `OrderService` (Vendor specific)
-    - `[x]` `ReviewService`
-    - `[x]` `VendorReportService` (with PDF logic)
-- `[x]` Implement Providers
-    - `[x]` `VendorOrderProvider`
-    - `[x]` `ReviewProvider`
-    - `[x]` `VendorReportProvider`
+- `[x]` Update `pubspec.yaml` with `skeletonizer`
+- `[x]` Implement Data Models
+    - `[x]` `AddressModel`
+    - `[x]` `CartItemModel`
+    - `[x]` `WishlistModel`
+    - `[x]` `NotificationModel`
+- `[x]` Implement Backend Services
+    - `[x]` `CartService`
+    - `[x]` `WishlistService`
+    - `[x]` `AddressService`
+    - `[x]` `NotificationService`
+    - `[x]` `CustomerOrderService`
+- `[x]` Implement State Management (Providers)
+    - `[x]` `CartProvider`
+    - `[x]` `WishlistProvider`
+    - `[x]` `AddressProvider`
+    - `[x]` `NotificationProvider`
+    - `[x]` `CustomerOrderProvider`
 - `[x]` Update Routing
     - `[x]` Add constants to `routes.dart`
-    - `[x]` Register routes in `app_router.dart`
-- `[x]` Implement UI Components
-    - `[x]` `VendorOrderListScreen`
-    - `[x]` `VendorOrderDetailsScreen`
-    - `[x]` `VendorReviewsScreen`
-    - `[x]` `VendorReportsScreen`
-- `[x]` Update `VendorDashboard` with Low Stock & Sales widgets
+    - `[x]` Configure `AppRouter` with Customer navigation
+- `[x]` Implement UI Screens
+    - `[x]` `CustomerMainNav` (Bottom Nav Wrapper)
+    - `[x]` `CustomerHome` (Modern e-commerce landing)
+    - `[x]` `AllShopsView` & `ShopDetailsScreen`
+    - `[x]` `ProductDetailsScreen` (Gallery, Reviews, Add to Cart)
+    - `[x]` `CartScreen` & `CheckoutScreen`
+    - `[x]` `OrderHistoryScreen` & `OrderTrackingScreen`
+    - `[x]` `CustomerProfileScreen` & `AddressListScreen`
 - `[x]` Final Verification & `flutter analyze`

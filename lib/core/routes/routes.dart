@@ -11,6 +11,17 @@ class Routes {
   static const String customerHome = '/customer-home';
   static const String riderDashboard = '/rider-dashboard';
 
+  // Customer Module Routes
+  static const String customerMain = '/customer-main';
+  static const String shopDetails = '/shop-details';
+  static const String productDetails = '/product-details';
+  static const String cart = '/cart';
+  static const String checkout = '/checkout';
+  static const String orderTracking = '/order-tracking';
+  static const String addresses = '/addresses';
+  static const String wishlist = '/wishlist';
+  static const String notifications = '/notifications';
+
   // Admin Management Routes
   static const String vendors = '/vendors';
   static const String shops = '/shops';
@@ -42,9 +53,6 @@ class Routes {
   // Feature Routes
   static const String profile = '/profile';
   static const String products = '/products';
-  static const String productDetails = '/product-details';
-  static const String cart = '/cart';
-  static const String checkout = '/checkout';
   static const String orders = '/orders';
   static const String orderDetails = '/order-details';
 }

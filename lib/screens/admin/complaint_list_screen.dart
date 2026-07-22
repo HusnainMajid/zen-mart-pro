@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/routes.dart';
 import '../../providers/complaint_provider.dart';
-import '../../models/complaint_model.dart';
 
 class ComplaintListScreen extends StatefulWidget {
   const ComplaintListScreen({super.key});

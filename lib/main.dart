@@ -21,6 +21,11 @@ import 'providers/vendor_dashboard_provider.dart';
 import 'providers/vendor_order_provider.dart';
 import 'providers/vendor_review_provider.dart';
 import 'providers/vendor_report_provider.dart';
+import 'providers/cart_provider.dart';
+import 'providers/wishlist_provider.dart';
+import 'providers/address_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/customer_order_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,6 +100,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => VendorOrderProvider()),
         ChangeNotifierProvider(create: (_) => VendorReviewProvider()),
         ChangeNotifierProvider(create: (_) => VendorReportProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => AddressProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => CustomerOrderProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
           create: (context) => SessionProvider(context.read<AuthProvider>()),
           update: (context, auth, previous) => previous!..update(auth),

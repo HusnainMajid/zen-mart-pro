@@ -56,6 +56,7 @@ dependencies:
   fl_chart: any
   pdf: any
   printing: any
+  skeletonizer: any
 
 dev_dependencies:
   flutter_test:
