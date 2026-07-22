@@ -15,6 +15,12 @@ import 'providers/complaint_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'providers/admin_product_provider.dart';
 import 'providers/admin_order_provider.dart';
+import 'providers/vendor_product_provider.dart';
+import 'providers/vendor_category_provider.dart';
+import 'providers/vendor_dashboard_provider.dart';
+import 'providers/vendor_order_provider.dart';
+import 'providers/vendor_review_provider.dart';
+import 'providers/vendor_report_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +89,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => AdminProductProvider()),
         ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
+        ChangeNotifierProvider(create: (_) => VendorProductProvider()),
+        ChangeNotifierProvider(create: (_) => VendorCategoryProvider()),
+        ChangeNotifierProvider(create: (_) => VendorDashboardProvider()),
+        ChangeNotifierProvider(create: (_) => VendorOrderProvider()),
+        ChangeNotifierProvider(create: (_) => VendorReviewProvider()),
+        ChangeNotifierProvider(create: (_) => VendorReportProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
           create: (context) => SessionProvider(context.read<AuthProvider>()),
           update: (context, auth, previous) => previous!..update(auth),

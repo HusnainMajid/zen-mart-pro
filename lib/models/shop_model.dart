@@ -10,6 +10,7 @@ class ShopModel {
   final String logo;
   final String ownerId;
   final String status; // e.g., 'active', 'inactive', 'pending'
+  final Map<String, String>? businessHours;
   final DateTime createdAt;
 
   ShopModel({
@@ -22,6 +23,7 @@ class ShopModel {
     required this.logo,
     required this.ownerId,
     required this.status,
+    this.businessHours,
     required this.createdAt,
   });
 
@@ -36,6 +38,7 @@ class ShopModel {
       'logo': logo,
       'ownerId': ownerId,
       'status': status,
+      'businessHours': businessHours,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -51,6 +54,7 @@ class ShopModel {
       logo: map['logo'] ?? '',
       ownerId: map['ownerId'] ?? '',
       status: map['status'] ?? 'pending',
+      businessHours: map['businessHours'] != null ? Map<String, String>.from(map['businessHours']) : null,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
   }
@@ -65,6 +69,7 @@ class ShopModel {
     String? logo,
     String? ownerId,
     String? status,
+    Map<String, String>? businessHours,
     DateTime? createdAt,
   }) {
     return ShopModel(
@@ -77,6 +82,7 @@ class ShopModel {
       logo: logo ?? this.logo,
       ownerId: ownerId ?? this.ownerId,
       status: status ?? this.status,
+      businessHours: businessHours ?? this.businessHours,
       createdAt: createdAt ?? this.createdAt,
     );
   }

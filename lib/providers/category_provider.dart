@@ -67,6 +67,8 @@ class CategoryProvider with ChangeNotifier {
         name: name,
         description: description,
         iconUrl: iconUrl,
+        displayOrder: 0,
+        status: 'active',
         createdAt: DateTime.now(),
       );
 

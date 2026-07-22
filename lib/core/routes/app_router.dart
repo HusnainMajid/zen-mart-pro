@@ -13,6 +13,14 @@ import '../../screens/admin/assign_shop_screen.dart';
 import '../../screens/admin/customers_screen.dart';
 import '../../screens/admin/riders_screen.dart';
 import '../../screens/vendor/vendor_dashboard.dart';
+import '../../screens/vendor/shop_profile_screen.dart';
+import '../../screens/vendor/vendor_category_screen.dart';
+import '../../screens/vendor/vendor_product_list_screen.dart';
+import '../../screens/vendor/add_edit_product_screen.dart';
+import '../../screens/vendor/vendor_order_list_screen.dart';
+import '../../screens/vendor/vendor_order_details_screen.dart';
+import '../../screens/vendor/vendor_reviews_screen.dart';
+import '../../screens/vendor/vendor_reports_screen.dart';
 import '../../screens/customer/customer_home.dart';
 import '../../screens/rider/rider_dashboard.dart';
 import '../../screens/admin/all_shops_screen.dart';
@@ -22,6 +30,7 @@ import '../../screens/admin/order_details_screen.dart';
 import '../../screens/admin/analytics_screen.dart';
 import '../../models/order_model.dart';
 import '../../models/complaint_model.dart';
+import '../../models/product_model.dart';
 import '../../screens/admin/category_management_screen.dart';
 import '../../screens/admin/shop_banner_screen.dart';
 import '../../screens/admin/complaint_list_screen.dart';
@@ -70,6 +79,27 @@ class AppRouter {
         return _getDashboardRoute(user.role);
       }
 
+      // 4. Role-based Access Control for Vendor Module
+      final role = user.role.toLowerCase();
+      final location = state.matchedLocation;
+
+      final vendorRoutes = [
+        Routes.vendorDashboard,
+        Routes.shopProfile,
+        Routes.vendorCategories,
+        Routes.vendorProducts,
+        Routes.addProduct,
+        Routes.editProduct,
+        Routes.vendorOrders,
+        Routes.vendorOrderDetails,
+        Routes.vendorReviews,
+        Routes.vendorReports,
+      ];
+
+      if (vendorRoutes.contains(location) && role != 'vendor') {
+        return _getDashboardRoute(role);
+      }
+
       return null;
     },
     routes: [
@@ -96,6 +126,48 @@ class AppRouter {
       GoRoute(
         path: Routes.vendorDashboard,
         builder: (context, state) => const VendorDashboard(),
+      ),
+      GoRoute(
+        path: Routes.shopProfile,
+        builder: (context, state) => const ShopProfileScreen(),
+      ),
+      GoRoute(
+        path: Routes.vendorCategories,
+        builder: (context, state) => const VendorCategoryScreen(),
+      ),
+      GoRoute(
+        path: Routes.vendorProducts,
+        builder: (context, state) => const VendorProductListScreen(),
+      ),
+      GoRoute(
+        path: Routes.addProduct,
+        builder: (context, state) => const AddEditProductScreen(),
+      ),
+      GoRoute(
+        path: Routes.editProduct,
+        builder: (context, state) {
+          final product = state.extra as ProductModel;
+          return AddEditProductScreen(product: product);
+        },
+      ),
+      GoRoute(
+        path: Routes.vendorOrders,
+        builder: (context, state) => const VendorOrderListScreen(),
+      ),
+      GoRoute(
+        path: Routes.vendorOrderDetails,
+        builder: (context, state) {
+          final order = state.extra as OrderModel;
+          return VendorOrderDetailsScreen(order: order);
+        },
+      ),
+      GoRoute(
+        path: Routes.vendorReviews,
+        builder: (context, state) => const VendorReviewsScreen(),
+      ),
+      GoRoute(
+        path: Routes.vendorReports,
+        builder: (context, state) => const VendorReportsScreen(),
       ),
       GoRoute(
         path: Routes.customerHome,

@@ -71,6 +71,20 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
+  Future<ShopModel?> getShopById(String shopId) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      final shop = await _shopService.getShopById(shopId);
+      return shop;
+    } catch (e) {
+      _error = e.toString();
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> assignShop(String shopId, String vendorId) async {
     _setLoading(true);
     _error = null;

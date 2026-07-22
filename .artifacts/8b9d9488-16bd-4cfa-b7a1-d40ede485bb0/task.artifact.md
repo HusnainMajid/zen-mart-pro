@@ -1,40 +1,26 @@
-# Tasks - Super Admin Management Module (Part 2)
+# Tasks - Vendor Module (Part 2)
 
-- `[x]` Update `pubspec.yaml` with `fl_chart`
-- `[x]` Implement Models
-    - `[x]` `CategoryModel`
-    - `[x]` `ComplaintModel`
-    - `[x]` `ProductModel`
-    - `[x]` `OrderModel`
-    - `[x]` `ShopBannerModel`
-    - `[x]` `AnalyticsModel`
+- `[x]` Update `pubspec.yaml` with `pdf` and `printing`
+- `[x]` Update Models
+    - `[x]` `OrderModel` expansion
+    - `[x]` `OrderItemModel` creation
+    - `[x]` `ReviewModel` creation
+    - `[x]` `SalesReportModel` creation
 - `[x]` Implement Services
-    - `[x]` `StorageService`
-    - `[x]` `CategoryService`
-    - `[x]` `ShopBannerService`
-    - `[x]` `ComplaintService`
-    - `[x]` `AnalyticsService`
-    - `[x]` `AdminProductService`
-    - `[x]` `AdminOrderService`
+    - `[x]` `OrderService` (Vendor specific)
+    - `[x]` `ReviewService`
+    - `[x]` `VendorReportService` (with PDF logic)
 - `[x]` Implement Providers
-    - `[x]` `CategoryProvider`
-    - `[x]` `ShopBannerProvider`
-    - `[x]` `ComplaintProvider`
-    - `[x]` `AnalyticsProvider`
-    - `[x]` `AdminProductProvider`
-    - `[x]` `AdminOrderProvider`
+    - `[x]` `VendorOrderProvider`
+    - `[x]` `ReviewProvider`
+    - `[x]` `VendorReportProvider`
 - `[x]` Update Routing
     - `[x]` Add constants to `routes.dart`
     - `[x]` Register routes in `app_router.dart`
-- `[x]` Implement UI Screens
-    - `[x]` `CategoryManagementScreen`
-    - `[x]` `ShopBannerScreen`
-    - `[x]` `AllShopsScreen` (Enhanced Table)
-    - `[x]` `AllProductsScreen` (Pagination/Filters)
-    - `[x]` `AllOrdersScreen` (Pagination/Filters)
-    - `[x]` `OrderDetailsScreen`
-    - `[x]` `ComplaintListScreen`
-    - `[x]` `ComplaintDetailsScreen`
-    - `[x]` `AnalyticsScreen` (fl_chart)
-- `[x]` Update `AdminDrawer`
+- `[x]` Implement UI Components
+    - `[x]` `VendorOrderListScreen`
+    - `[x]` `VendorOrderDetailsScreen`
+    - `[x]` `VendorReviewsScreen`
+    - `[x]` `VendorReportsScreen`
+- `[x]` Update `VendorDashboard` with Low Stock & Sales widgets
 - `[x]` Final Verification & `flutter analyze`

@@ -28,6 +28,17 @@ class Routes {
   static const String complaintDetails = '/complaint-details';
   static const String analytics = '/analytics';
 
+  // Vendor Specific Routes
+  static const String shopProfile = '/shop-profile';
+  static const String vendorCategories = '/vendor-categories';
+  static const String vendorProducts = '/vendor-products';
+  static const String addProduct = '/add-product';
+  static const String editProduct = '/edit-product';
+  static const String vendorOrders = '/vendor-orders';
+  static const String vendorOrderDetails = '/vendor-order-details';
+  static const String vendorReviews = '/vendor-reviews';
+  static const String vendorReports = '/vendor-reports';
+
   // Feature Routes
   static const String profile = '/profile';
   static const String products = '/products';
