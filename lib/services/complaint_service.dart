@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/complaint_model.dart';
 
 class ComplaintService {
@@ -11,6 +12,9 @@ class ComplaintService {
       final querySnapshot = await _db.collection(_collection).orderBy('createdAt', descending: true).get();
       return querySnapshot.docs.map((doc) => ComplaintModel.fromMap(doc.data())).toList();
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to get complaints: $e';

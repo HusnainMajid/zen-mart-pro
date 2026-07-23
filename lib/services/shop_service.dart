@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/shop_model.dart';
 
 class ShopService {
@@ -11,6 +12,9 @@ class ShopService {
       final snapshot = await _db.collection(_collection).get();
       return snapshot.docs.map((doc) => ShopModel.fromMap(doc.data())).toList();
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch shops: $e';
@@ -43,6 +47,9 @@ class ShopService {
         'shopId': shopId,
       });
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       rethrow;
@@ -53,6 +60,8 @@ class ShopService {
   Future<void> updateShop(ShopModel shop) async {
     try {
       await _db.collection(_collection).doc(shop.id).update(shop.toMap());
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to update shop: $e';
     }
@@ -66,6 +75,8 @@ class ShopService {
       await _db.collection('users').doc(ownerId).update({
         'shopId': FieldValue.delete(),
       });
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to delete shop: $e';
     }

@@ -29,7 +29,6 @@ class VendorService {
     required String password,
     required String fullName,
     required String phone,
-    String? profileImage,
   }) async {
     FirebaseApp? secondaryApp;
     try {
@@ -55,7 +54,6 @@ class VendorService {
         email: email,
         phoneNumber: phone,
         role: 'vendor',
-        profileImage: profileImage,
         isActive: true,
         isVerified: true,
         createdAt: DateTime.now(),

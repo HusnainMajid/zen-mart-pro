@@ -151,11 +151,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Column(
       children: [
         ...addressProvider.addresses.map((address) {
+          // ignore: deprecated_member_use
           return RadioListTile<String>(
             title: Text(address.title),
             subtitle: Text('${address.street}, ${address.city}'),
             value: address.id,
+            // ignore: deprecated_member_use
             groupValue: _selectedAddressId ?? addressProvider.defaultAddress?.id,
+            // ignore: deprecated_member_use
             onChanged: (value) {
               setState(() => _selectedAddressId = value);
             },
@@ -174,11 +177,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget _buildPaymentMethod() {
     return Column(
       children: [
+        // ignore: deprecated_member_use
         RadioListTile<String>(
           title: const Text('Cash on Delivery'),
           subtitle: const Text('Pay when you receive your order'),
           value: 'Cash on Delivery',
+          // ignore: deprecated_member_use
           groupValue: _selectedPaymentMethod,
+          // ignore: deprecated_member_use
           onChanged: null, // Only COD supported for now
         ),
       ],

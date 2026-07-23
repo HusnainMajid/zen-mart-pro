@@ -31,7 +31,6 @@ class Routes {
 
   // Super Admin Specific Routes
   static const String categoryManagement = '/category-management';
-  static const String shopBanners = '/shop-banners';
   static const String allShops = '/all-shops';
   static const String allProducts = '/all-products';
   static const String allOrders = '/all-orders';

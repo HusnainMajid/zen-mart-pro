@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/order_model.dart';
 
 class CustomerOrderService {
@@ -75,6 +76,11 @@ class CustomerOrderService {
         return snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
             .toList();
+      }).handleError((e) {
+        if (e is FirebaseException && e.code == 'failed-precondition') {
+          debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        }
+        throw e;
       });
     } catch (e) {
       throw 'Failed to fetch your orders: $e';

@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/product_model.dart';
 
 class VendorProductService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'vendor_products';
+  final String _collection = 'products';
 
   /// Fetches all products for a specific shop
   Future<List<ProductModel>> getShopProducts(String shopId) async {
@@ -17,6 +18,12 @@ class VendorProductService {
       return snapshot.docs
           .map((doc) => ProductModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
+    } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch shop products: ${e.toString()}';
     }
@@ -26,6 +33,8 @@ class VendorProductService {
   Future<void> addProduct(ProductModel product) async {
     try {
       await _firestore.collection(_collection).doc(product.id).set(product.toMap());
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to add product: ${e.toString()}';
     }
@@ -35,6 +44,8 @@ class VendorProductService {
   Future<void> updateProduct(ProductModel product) async {
     try {
       await _firestore.collection(_collection).doc(product.id).update(product.toMap());
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to update product: ${e.toString()}';
     }
@@ -44,6 +55,8 @@ class VendorProductService {
   Future<void> deleteProduct(String productId) async {
     try {
       await _firestore.collection(_collection).doc(productId).delete();
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to delete product: ${e.toString()}';
     }
@@ -60,6 +73,12 @@ class VendorProductService {
           .get();
 
       return snapshot.docs.isNotEmpty;
+    } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to check SKU availability: ${e.toString()}';
     }

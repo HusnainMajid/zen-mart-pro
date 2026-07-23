@@ -105,7 +105,7 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                     child: PaginatedDataTable(
                       header: const Text('Shops List'),
                       columns: [
-                        const DataColumn(label: Text('Logo')),
+                        const DataColumn(label: Text('Icon')),
                         DataColumn(
                           label: const Text('Name'),
                           onSort: (columnIndex, ascending) {
@@ -151,10 +151,34 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                         productProvider: productProvider,
                         orderProvider: orderProvider,
                         onViewDetails: (shop) {
-                          // Placeholder for View Details
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(shop.name),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Vendor ID: ${shop.ownerId}'),
+                                  const SizedBox(height: 8),
+                                  Text('Status: ${shop.status.toUpperCase()}'),
+                                  const SizedBox(height: 8),
+                                  Text('Address: ${shop.address}'),
+                                  const SizedBox(height: 8),
+                                  Text('Created: ${DateFormatter.formatFullDate(shop.createdAt)}'),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                       ),
-                      rowsPerPage: filteredShops.length > 10 ? 10 : filteredShops.length == 0 ? 1 : filteredShops.length,
+                      rowsPerPage: filteredShops.length > 10 ? 10 : filteredShops.isEmpty ? 1 : filteredShops.length,
                       showCheckboxColumn: false,
                       sortColumnIndex: _sortColumnIndex,
                       sortAscending: _isAscending,
@@ -223,10 +247,9 @@ class _ShopDataSource extends DataTableSource {
     final orderCount = orderProvider.orders.where((o) => o.shopName == shop.name).length;
 
     return DataRow(cells: [
-      DataCell(
+      const DataCell(
         CircleAvatar(
-          backgroundImage: shop.logo.isNotEmpty ? NetworkImage(shop.logo) : null,
-          child: shop.logo.isEmpty ? const Icon(Icons.store) : null,
+          child: Icon(Icons.store),
         ),
       ),
       DataCell(Text(shop.name)),
@@ -259,7 +282,7 @@ class _ShopDataSource extends DataTableSource {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color),
       ),

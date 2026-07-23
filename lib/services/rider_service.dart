@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import '../models/rider_model.dart';
 import '../models/user_model.dart';
 
@@ -17,6 +18,9 @@ class RiderService {
           .get();
       return snapshot.docs.map((doc) => RiderModel.fromMap(doc.data())).toList();
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch riders: $e';
@@ -29,7 +33,6 @@ class RiderService {
     required String password,
     required String fullName,
     required String phone,
-    String? profileImage,
   }) async {
     FirebaseApp? secondaryApp;
     try {
@@ -53,7 +56,6 @@ class RiderService {
         email: email,
         phoneNumber: phone,
         role: 'rider',
-        profileImage: profileImage,
         isActive: true,
         isVerified: true,
         createdAt: DateTime.now(),
@@ -64,6 +66,9 @@ class RiderService {
     } on FirebaseAuthException catch (e) {
       throw 'Auth Error [${e.code}]: ${e.message}';
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to create rider: $e';

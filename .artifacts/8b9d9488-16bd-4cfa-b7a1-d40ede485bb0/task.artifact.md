@@ -1,32 +1,18 @@
-# Tasks - Complete Customer Module Implementation
+# Tasks - Project Simplification (Removal of Image Storage)
 
-- `[x]` Update `pubspec.yaml` with `skeletonizer`
-- `[x]` Implement Data Models
-    - `[x]` `AddressModel`
-    - `[x]` `CartItemModel`
-    - `[x]` `WishlistModel`
-    - `[x]` `NotificationModel`
-- `[x]` Implement Backend Services
-    - `[x]` `CartService`
-    - `[x]` `WishlistService`
-    - `[x]` `AddressService`
-    - `[x]` `NotificationService`
-    - `[x]` `CustomerOrderService`
-- `[x]` Implement State Management (Providers)
-    - `[x]` `CartProvider`
-    - `[x]` `WishlistProvider`
-    - `[x]` `AddressProvider`
-    - `[x]` `NotificationProvider`
-    - `[x]` `CustomerOrderProvider`
-- `[x]` Update Routing
-    - `[x]` Add constants to `routes.dart`
-    - `[x]` Configure `AppRouter` with Customer navigation
-- `[x]` Implement UI Screens
-    - `[x]` `CustomerMainNav` (Bottom Nav Wrapper)
-    - `[x]` `CustomerHome` (Modern e-commerce landing)
-    - `[x]` `AllShopsView` & `ShopDetailsScreen`
-    - `[x]` `ProductDetailsScreen` (Gallery, Reviews, Add to Cart)
-    - `[x]` `CartScreen` & `CheckoutScreen`
-    - `[x]` `OrderHistoryScreen` & `OrderTrackingScreen`
-    - `[x]` `CustomerProfileScreen` & `AddressListScreen`
-- `[x]` Final Verification & `flutter analyze`
+- `[/]` Model Simplification
+    - `[ ]` `UserModel`
+    - `[ ]` `ProductModel`
+    - `[ ]` `ShopModel`
+    - `[ ]` `CategoryModel`
+- `[ ]` Service & Provider Refactoring
+    - `[ ]` Remove `StorageService`
+    - `[ ]` Update `VendorProductProvider`
+    - `[ ]` Update `VendorCategoryProvider`
+    - `[ ]` Update `ShopProvider`
+- `[ ]` UI Refinement
+    - `[ ]` `AddEditProductScreen`
+    - `[ ]` `ShopProfileScreen`
+    - `[ ]` `CategoryManagementScreen`
+    - `[ ]` Dashboards & Lists
+- `[ ]` Verification & `flutter analyze`

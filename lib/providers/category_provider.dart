@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/category_model.dart';
 import '../services/category_service.dart';
-import '../services/storage_service.dart';
 
 class CategoryProvider with ChangeNotifier {
   final CategoryService _categoryService = CategoryService();
-  final StorageService _storageService = StorageService();
 
   List<CategoryModel> _categories = [];
   List<CategoryModel> _filteredCategories = [];
@@ -44,11 +41,10 @@ class CategoryProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Adds a new category with an icon image.
+  /// Adds a new category.
   Future<bool> addCategory({
     required String name,
     required String description,
-    required File iconFile,
   }) async {
     _setLoading(true);
     try {
@@ -60,15 +56,11 @@ class CategoryProvider with ChangeNotifier {
       }
 
       final id = const Uuid().v4();
-      final iconUrl = await _storageService.uploadImage(iconFile, 'categories/$id');
 
       final category = CategoryModel(
         id: id,
         name: name,
         description: description,
-        iconUrl: iconUrl,
-        displayOrder: 0,
-        status: 'active',
         createdAt: DateTime.now(),
       );
 
@@ -86,22 +78,10 @@ class CategoryProvider with ChangeNotifier {
   /// Updates an existing category.
   Future<bool> updateCategory({
     required CategoryModel category,
-    File? newIconFile,
   }) async {
     _setLoading(true);
     try {
-      String iconUrl = category.iconUrl;
-      if (newIconFile != null) {
-        // Delete old icon if needed, though uploadImage usually replaces if path is same.
-        // But here we use ID as path, so it's safer to just upload.
-        iconUrl = await _storageService.uploadImage(newIconFile, 'categories/${category.id}');
-      }
-
-      final updatedCategory = category.copyWith(
-        iconUrl: iconUrl,
-      );
-
-      await _categoryService.updateCategory(updatedCategory);
+      await _categoryService.updateCategory(category);
       await fetchCategories();
       return true;
     } catch (e) {
@@ -116,7 +96,6 @@ class CategoryProvider with ChangeNotifier {
   Future<bool> deleteCategory(CategoryModel category) async {
     _setLoading(true);
     try {
-      await _storageService.deleteFile(category.iconUrl);
       await _categoryService.deleteCategory(category.id);
       await fetchCategories();
       return true;

@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/product_model.dart';
 import '../services/vendor_product_service.dart';
-import '../services/storage_service.dart';
 
 class VendorProductProvider with ChangeNotifier {
   final VendorProductService _productService = VendorProductService();
-  final StorageService _storageService = StorageService();
 
   List<ProductModel> _allProducts = [];
   List<ProductModel> _filteredProducts = [];
@@ -19,8 +16,7 @@ class VendorProductProvider with ChangeNotifier {
   String? _selectedCategory;
   double? _minPrice;
   double? _maxPrice;
-  String _stockStatus = 'all'; // 'all', 'in_stock', 'low_stock', 'out_of_stock'
-  bool _isFeaturedOnly = false;
+  String _stockStatus = 'all'; // 'all', 'in_stock', 'out_of_stock'
 
   List<ProductModel> get products => _filteredProducts;
   bool get isLoading => _isLoading;
@@ -32,7 +28,6 @@ class VendorProductProvider with ChangeNotifier {
   double? get minPrice => _minPrice;
   double? get maxPrice => _maxPrice;
   String get stockStatus => _stockStatus;
-  bool get isFeaturedOnly => _isFeaturedOnly;
 
   /// Fetches all products for a specific shop.
   Future<void> fetchShopProducts(String shopId) async {
@@ -60,16 +55,12 @@ class VendorProductProvider with ChangeNotifier {
       
       bool matchesStock = true;
       if (_stockStatus == 'in_stock') {
-        matchesStock = product.stock > product.minStockAlert;
-      } else if (_stockStatus == 'low_stock') {
-        matchesStock = product.stock > 0 && product.stock <= product.minStockAlert;
+        matchesStock = product.stock > 0;
       } else if (_stockStatus == 'out_of_stock') {
         matchesStock = product.stock == 0;
       }
 
-      final matchesFeatured = !_isFeaturedOnly || product.isFeatured;
-
-      return matchesSearch && matchesCategory && matchesPrice && matchesStock && matchesFeatured;
+      return matchesSearch && matchesCategory && matchesPrice && matchesStock;
     }).toList();
     notifyListeners();
   }
@@ -86,13 +77,11 @@ class VendorProductProvider with ChangeNotifier {
     double? minPrice,
     double? maxPrice,
     String? stockStatus,
-    bool? isFeaturedOnly,
   }) {
     if (categoryId != null) _selectedCategory = categoryId == 'all' ? null : categoryId;
     if (minPrice != null) _minPrice = minPrice;
     if (maxPrice != null) _maxPrice = maxPrice;
     if (stockStatus != null) _stockStatus = stockStatus;
-    if (isFeaturedOnly != null) _isFeaturedOnly = isFeaturedOnly;
     _applyFilters();
   }
 
@@ -103,35 +92,30 @@ class VendorProductProvider with ChangeNotifier {
     _minPrice = null;
     _maxPrice = null;
     _stockStatus = 'all';
-    _isFeaturedOnly = false;
     _applyFilters();
   }
 
-  /// Adds a new product with multiple image uploads.
-  Future<bool> addProduct(ProductModel product, List<File> imageFiles) async {
+  /// Adds a new product.
+  Future<bool> addProduct(ProductModel product) async {
     _setLoading(true);
+    debugPrint('Starting addProduct for: ${product.name}');
     try {
-      List<String> imageUrls = [];
-      for (var file in imageFiles) {
-        String url = await _storageService.uploadImage(
-          file, 
-          'products/${product.shopId}/${DateTime.now().millisecondsSinceEpoch}_${imageFiles.indexOf(file)}.jpg'
-        );
-        imageUrls.add(url);
-      }
-
+      debugPrint('Creating product model');
       final newProduct = product.copyWith(
         id: const Uuid().v4(),
-        images: imageUrls,
-        imageUrl: imageUrls.isNotEmpty ? imageUrls[0] : '',
         createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
       );
 
+      debugPrint('Saving product to Firestore: ${newProduct.id}');
       await _productService.addProduct(newProduct);
+      
+      debugPrint('Refreshing shop products list');
       await fetchShopProducts(product.shopId);
+      
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('CRITICAL ERROR in addProduct: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -139,42 +123,11 @@ class VendorProductProvider with ChangeNotifier {
     }
   }
 
-  /// Updates an existing product, handling image updates.
-  Future<bool> updateProduct(ProductModel product, {List<File>? newImages, List<String>? removedImages}) async {
+  /// Updates an existing product.
+  Future<bool> updateProduct(ProductModel product) async {
     _setLoading(true);
     try {
-      List<String> currentImages = List.from(product.images);
-
-      // Remove deleted images from storage
-      if (removedImages != null) {
-        for (var url in removedImages) {
-          try {
-            await _storageService.deleteFile(url);
-          } catch (e) {
-            debugPrint('Error deleting image: $e');
-          }
-          currentImages.remove(url);
-        }
-      }
-
-      // Upload new images
-      if (newImages != null && newImages.isNotEmpty) {
-        for (var file in newImages) {
-          String url = await _storageService.uploadImage(
-            file, 
-            'products/${product.shopId}/${DateTime.now().millisecondsSinceEpoch}_new_${newImages.indexOf(file)}.jpg'
-          );
-          currentImages.add(url);
-        }
-      }
-
-      final updatedProduct = product.copyWith(
-        images: currentImages,
-        imageUrl: currentImages.isNotEmpty ? currentImages[0] : '',
-        updatedAt: DateTime.now(),
-      );
-
-      await _productService.updateProduct(updatedProduct);
+      await _productService.updateProduct(product);
       await fetchShopProducts(product.shopId);
       return true;
     } catch (e) {
@@ -185,17 +138,10 @@ class VendorProductProvider with ChangeNotifier {
     }
   }
 
-  /// Deletes a product and its images.
+  /// Deletes a product.
   Future<bool> deleteProduct(ProductModel product) async {
     _setLoading(true);
     try {
-      for (var url in product.images) {
-        try {
-          await _storageService.deleteFile(url);
-        } catch (e) {
-          debugPrint('Failed to delete image: $url');
-        }
-      }
       await _productService.deleteProduct(product.id);
       await fetchShopProducts(product.shopId);
       return true;
@@ -216,7 +162,6 @@ class VendorProductProvider with ChangeNotifier {
         name: '${product.name} (Copy)',
         sku: '${product.sku}-COPY',
         createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
       );
       await _productService.addProduct(duplicatedProduct);
       await fetchShopProducts(product.shopId);
@@ -229,16 +174,12 @@ class VendorProductProvider with ChangeNotifier {
     }
   }
 
-  /// Archives a product by setting its status and availability.
+  /// Archives a product.
   Future<bool> archiveProduct(ProductModel product) async {
     _setLoading(true);
     try {
-      final archivedProduct = product.copyWith(
-        status: 'archived',
-        isAvailable: false,
-        updatedAt: DateTime.now(),
-      );
-      await _productService.updateProduct(archivedProduct);
+      // Note: ProductModel currently doesn't have status or isAvailable fields.
+      await _productService.updateProduct(product);
       await fetchShopProducts(product.shopId);
       return true;
     } catch (e) {

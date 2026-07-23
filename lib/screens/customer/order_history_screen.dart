@@ -161,7 +161,6 @@ class OrderHistoryScreen extends StatelessWidget {
         productId: item.productId,
         name: item.name,
         price: item.price,
-        imageUrl: '', // OrderItemModel doesn't have image, re-adding with empty string or fetch needed
         quantity: item.quantity,
         total: item.total,
         shopId: order.shopId,

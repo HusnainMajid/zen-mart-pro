@@ -1,12 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_category_provider.dart';
 import '../../models/category_model.dart';
-import '../../services/storage_service.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../shared/widgets/error_widget.dart';
 import '../../shared/widgets/empty_state_widget.dart';
@@ -90,11 +86,8 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: category.iconUrl.isNotEmpty
-              ? CachedNetworkImageProvider(category.iconUrl)
-              : null,
-          child: category.iconUrl.isEmpty ? const Icon(Icons.category) : null,
+        leading: const CircleAvatar(
+          child: Icon(Icons.category),
         ),
         title: Text(category.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(category.description, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -119,8 +112,6 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
     final isEditing = category != null;
     final nameController = TextEditingController(text: category?.name ?? '');
     final descController = TextEditingController(text: category?.description ?? '');
-    String status = category?.status ?? 'active';
-    File? imageFile;
     bool isSaving = false;
 
     await showDialog(
@@ -133,31 +124,7 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap: () async {
-                    final picker = ImagePicker();
-                    final picked = await picker.pickImage(source: ImageSource.gallery);
-                    if (picked != null) {
-                      setDialogState(() => imageFile = File(picked.path));
-                    }
-                  },
-                  child: Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                      image: imageFile != null
-                          ? DecorationImage(image: FileImage(imageFile!), fit: BoxFit.cover)
-                          : (category?.iconUrl.isNotEmpty ?? false)
-                              ? DecorationImage(image: CachedNetworkImageProvider(category!.iconUrl), fit: BoxFit.cover)
-                              : null,
-                    ),
-                    child: (imageFile == null && (category?.iconUrl.isEmpty ?? true))
-                        ? const Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
-                        : null,
-                  ),
-                ),
+                const Icon(Icons.category, size: 64, color: Colors.grey),
                 const SizedBox(height: 16),
                 TextField(
                   controller: nameController,
@@ -168,15 +135,6 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
                   controller: descController,
                   decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
                   maxLines: 2,
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: status,
-                  decoration: const InputDecoration(labelText: 'Status', border: OutlineInputBorder()),
-                  items: const [
-                    DropdownMenuItem(value: 'active', child: Text('Active')),
-                    DropdownMenuItem(value: 'inactive', child: Text('Inactive')),
-                  ],
-                  onChanged: (val) => setDialogState(() => status = val!),
                 ),
               ],
             ),
@@ -198,24 +156,12 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
                   final provider = context.read<VendorCategoryProvider>();
                   final auth = context.read<AuthProvider>();
                   final user = auth.currentUser!;
-                  String imageUrl = category?.iconUrl ?? '';
-
-                  if (imageFile != null) {
-                    imageUrl = await StorageService().uploadImage(
-                      imageFile!,
-                      'categories/${user.shopId}/${DateTime.now().millisecondsSinceEpoch}.jpg',
-                    );
-                  }
 
                   final newCategory = CategoryModel(
                     id: category?.id ?? '',
                     name: nameController.text.trim(),
                     description: descController.text.trim(),
-                    iconUrl: imageUrl,
                     shopId: user.shopId,
-                    displayOrder: category?.displayOrder ?? 0,
-                    status: status,
-                    isActive: status == 'active',
                     createdAt: category?.createdAt ?? DateTime.now(),
                   );
 
@@ -226,10 +172,14 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
                     success = await provider.addCategory(newCategory);
                   }
 
-                  if (success && context.mounted) {
+                  if (!mounted) return;
+                  if (success) {
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
+                    // ignore: use_build_context_synchronously
                     SnackBarHelper.showSuccess(context, 'Category ${isEditing ? 'updated' : 'added'} successfully');
-                  } else if (context.mounted) {
+                  } else {
+                    // ignore: use_build_context_synchronously
                     SnackBarHelper.showError(context, provider.errorMessage ?? 'Operation failed');
                   }
                 } catch (e) {
@@ -269,13 +219,12 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
     );
 
     if (confirmed == true && context.mounted) {
-      final scaffoldContext = context;
       final user = auth.currentUser!;
       final success = await provider.deleteCategory(category.id, user.shopId!);
-      if (success && scaffoldContext.mounted) {
-        SnackBarHelper.showSuccess(scaffoldContext, 'Category deleted successfully');
-      } else if (scaffoldContext.mounted) {
-        SnackBarHelper.showError(scaffoldContext, provider.errorMessage ?? 'Failed to delete category');
+      if (success && context.mounted) {
+        SnackBarHelper.showSuccess(context, 'Category deleted successfully');
+      } else if (context.mounted) {
+        SnackBarHelper.showError(context, provider.errorMessage ?? 'Failed to delete category');
       }
     }
   }

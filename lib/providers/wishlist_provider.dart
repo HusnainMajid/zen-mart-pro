@@ -57,7 +57,6 @@ class WishlistProvider with ChangeNotifier {
         productId: wishlistItem.productId,
         name: wishlistItem.name,
         price: wishlistItem.price,
-        imageUrl: wishlistItem.imageUrl,
         quantity: 1,
         total: wishlistItem.price,
         shopId: wishlistItem.shopId,

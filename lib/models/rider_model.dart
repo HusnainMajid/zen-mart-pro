@@ -5,7 +5,6 @@ class RiderModel {
   final String fullName;
   final String email;
   final String phone;
-  final String profileImage;
   final String status; // e.g., 'active', 'inactive', 'on_delivery'
   final DateTime createdAt;
 
@@ -14,7 +13,6 @@ class RiderModel {
     required this.fullName,
     required this.email,
     required this.phone,
-    required this.profileImage,
     required this.status,
     required this.createdAt,
   });
@@ -25,7 +23,6 @@ class RiderModel {
       'fullName': fullName,
       'email': email,
       'phone': phone,
-      'profileImage': profileImage,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
     };
@@ -37,7 +34,6 @@ class RiderModel {
       fullName: map['fullName'] ?? '',
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
-      profileImage: map['profileImage'] ?? '',
       status: map['status'] ?? 'active',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
@@ -57,7 +53,6 @@ class RiderModel {
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      profileImage: profileImage ?? this.profileImage,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
     );

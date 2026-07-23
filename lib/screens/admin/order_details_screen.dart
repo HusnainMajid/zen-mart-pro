@@ -45,7 +45,7 @@ class OrderDetailsScreen extends StatelessWidget {
     }
 
     return Card(
-      color: color.withOpacity(0.1),
+      color: color.withAlpha(25),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: color),
@@ -63,7 +63,7 @@ class OrderDetailsScreen extends StatelessWidget {
             const Spacer(),
             Text(
               DateFormatter.formatDateTime(order.orderTime),
-              style: TextStyle(color: color.withOpacity(0.8)),
+              style: TextStyle(color: color.withAlpha(204)),
             ),
           ],
         ),
@@ -183,7 +183,7 @@ class OrderDetailsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(76),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

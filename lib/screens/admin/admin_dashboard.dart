@@ -235,12 +235,15 @@ class _SummaryCard extends StatelessWidget {
               if (isLoading)
                 const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
               else
-                Text(
-                  count,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: count == 'View' ? 18 : null,
-                      ),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    count,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: count == 'View' ? 18 : null,
+                        ),
+                  ),
                 ),
               const SizedBox(height: 2),
               Flexible(

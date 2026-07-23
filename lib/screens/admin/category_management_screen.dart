@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/category_model.dart';
 import '../../providers/category_provider.dart';
 import '../../shared/widgets/custom_text_field.dart';
@@ -133,13 +130,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                       Expanded(
                         child: Stack(
                           children: [
-                            CachedNetworkImage(
-                              imageUrl: category.iconUrl,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            const Center(
+                              child: Icon(Icons.category, size: 64, color: Colors.grey),
                             ),
                             Positioned(
                               top: 8,
@@ -231,8 +223,7 @@ class _CategoryDialogState extends State<CategoryDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descController;
-  File? _selectedImage;
-  bool _isUploading = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -248,24 +239,10 @@ class _CategoryDialogState extends State<CategoryDialog> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
-
   void _save() async {
     if (!_formKey.currentState!.validate()) return;
-    if (widget.category == null && _selectedImage == null) {
-      SnackBarHelper.showError(context, 'Please select an icon image');
-      return;
-    }
 
-    setState(() => _isUploading = true);
+    setState(() => _isSaving = true);
     final provider = context.read<CategoryProvider>();
     bool success;
 
@@ -273,7 +250,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
       success = await provider.addCategory(
         name: _nameController.text.trim(),
         description: _descController.text.trim(),
-        iconFile: _selectedImage!,
       );
     } else {
       success = await provider.updateCategory(
@@ -281,13 +257,11 @@ class _CategoryDialogState extends State<CategoryDialog> {
           name: _nameController.text.trim(),
           description: _descController.text.trim(),
         ),
-        newIconFile: _selectedImage,
       );
     }
 
     if (!mounted) return;
-    setState(() => _isUploading = false);
-    if (!context.mounted) return;
+    setState(() => _isSaving = false);
     if (success) {
       SnackBarHelper.showSuccess(context, 'Category ${widget.category == null ? 'added' : 'updated'} successfully');
       Navigator.of(context).pop();
@@ -306,31 +280,7 @@ class _CategoryDialogState extends State<CategoryDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: _selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                        )
-                      : widget.category != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                imageUrl: widget.category!.iconUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : const Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                ),
-              ),
+              const Icon(Icons.category, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
               CustomTextField(
                 controller: _nameController,
@@ -349,7 +299,7 @@ class _CategoryDialogState extends State<CategoryDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isUploading ? null : () => Navigator.of(context).pop(),
+          onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
         SizedBox(
@@ -357,7 +307,7 @@ class _CategoryDialogState extends State<CategoryDialog> {
           child: PrimaryButton(
             text: widget.category == null ? 'Add' : 'Update',
             onPressed: _save,
-            isLoading: _isUploading,
+            isLoading: _isSaving,
           ),
         ),
       ],

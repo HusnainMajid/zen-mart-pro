@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/routes/routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_product_provider.dart';
@@ -32,6 +31,7 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
 
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final user = context.read<AuthProvider>().currentUser;
       if (user != null && user.shopId != null) {
         context.read<VendorProductProvider>().fetchShopProducts(user.shopId!);
@@ -123,7 +123,6 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
           onEdit: () => context.push(Routes.editProduct, extra: product),
           onDelete: () => _confirmDelete(product),
           onDuplicate: () => _handleDuplicate(product),
-          onArchive: () => _handleArchive(product),
         );
       },
     );
@@ -142,8 +141,8 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
       context: context,
       builder: (context) => ConfirmationDialog(
         title: 'Delete Product',
-        content: 'Are you sure you want to delete "${product.name}"? This action cannot be undone and will remove all product images.',
-        onConfirm: () {}, // Not used as we catch result
+        content: 'Are you sure you want to delete "${product.name}"? This action cannot be undone.',
+        onConfirm: () {}, 
       ),
     );
 
@@ -166,15 +165,6 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
     }
   }
 
-  Future<void> _handleArchive(ProductModel product) async {
-    final success = await context.read<VendorProductProvider>().archiveProduct(product);
-    if (success && mounted) {
-      SnackBarHelper.showSuccess(context, 'Product archived successfully');
-    } else if (mounted) {
-      SnackBarHelper.showError(context, context.read<VendorProductProvider>().errorMessage ?? 'Archive failed');
-    }
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -187,19 +177,16 @@ class _ProductListItem extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onDuplicate;
-  final VoidCallback onArchive;
 
   const _ProductListItem({
     required this.product,
     required this.onEdit,
     required this.onDelete,
     required this.onDuplicate,
-    required this.onArchive,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isLowStock = product.stock <= product.minStockAlert && product.stock > 0;
     final isOutOfStock = product.stock == 0;
 
     return Card(
@@ -212,22 +199,16 @@ class _ProductListItem extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Product Image
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: product.imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                  ),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
                 ),
+                child: const Icon(Icons.inventory_2, color: Colors.grey, size: 40),
               ),
               const SizedBox(width: 16),
-              // Product Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,24 +248,21 @@ class _ProductListItem extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    _buildStockBadge(context, isOutOfStock, isLowStock),
+                    _buildStockBadge(context, isOutOfStock),
                   ],
                 ),
               ),
-              // Actions Menu
               PopupMenuButton<String>(
                 onSelected: (value) {
                   switch (value) {
                     case 'edit': onEdit(); break;
                     case 'duplicate': onDuplicate(); break;
-                    case 'archive': onArchive(); break;
                     case 'delete': onDelete(); break;
                   }
                 },
                 itemBuilder: (context) => [
                   const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, size: 18), SizedBox(width: 8), Text('Edit')])),
                   const PopupMenuItem(value: 'duplicate', child: Row(children: [Icon(Icons.copy, size: 18), SizedBox(width: 8), Text('Duplicate')])),
-                  const PopupMenuItem(value: 'archive', child: Row(children: [Icon(Icons.archive_outlined, size: 18), SizedBox(width: 8), Text('Archive')])),
                   const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_outline, color: Colors.red, size: 18), SizedBox(width: 8), Text('Delete', style: TextStyle(color: Colors.red))])),
                 ],
               ),
@@ -295,21 +273,13 @@ class _ProductListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStockBadge(BuildContext context, bool isOutOfStock, bool isLowStock) {
+  Widget _buildStockBadge(BuildContext context, bool isOutOfStock) {
     String label = 'In Stock: ${product.stock}';
     Color color = Colors.green;
 
     if (isOutOfStock) {
       label = 'Out of Stock';
       color = Colors.red;
-    } else if (isLowStock) {
-      label = 'Low Stock: ${product.stock}';
-      color = Colors.orange;
-    }
-
-    if (product.status == 'archived') {
-      label = 'Archived';
-      color = Colors.grey;
     }
 
     return Container(
@@ -337,7 +307,6 @@ class _FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   String? _selectedCategoryId;
   String _stockStatus = 'all';
-  bool _isFeatured = false;
 
   @override
   void initState() {
@@ -345,7 +314,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
     final provider = context.read<VendorProductProvider>();
     _selectedCategoryId = provider.selectedCategory;
     _stockStatus = provider.stockStatus;
-    _isFeatured = provider.isFeaturedOnly;
   }
 
   @override
@@ -372,7 +340,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             ],
           ),
           const SizedBox(height: 16),
-          // Category
           const Text('Category', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
@@ -382,28 +349,18 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               const DropdownMenuItem(value: 'all', child: Text('All Categories')),
               ...categories.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))),
             ],
-            onChanged: (val) => setState(() => _selectedCategoryId = val),
+            onChanged: (val) => setState(() => _selectedCategoryId = val == 'all' ? null : val),
             decoration: const InputDecoration(border: OutlineInputBorder()),
           ),
           const SizedBox(height: 16),
-          // Stock Status
           const Text('Stock Status', style: TextStyle(fontWeight: FontWeight.bold)),
           Wrap(
             spacing: 8,
             children: [
               _FilterChip(label: 'All', value: 'all', groupValue: _stockStatus, onSelected: (v) => setState(() => _stockStatus = v)),
               _FilterChip(label: 'In Stock', value: 'in_stock', groupValue: _stockStatus, onSelected: (v) => setState(() => _stockStatus = v)),
-              _FilterChip(label: 'Low Stock', value: 'low_stock', groupValue: _stockStatus, onSelected: (v) => setState(() => _stockStatus = v)),
               _FilterChip(label: 'Out of Stock', value: 'out_of_stock', groupValue: _stockStatus, onSelected: (v) => setState(() => _stockStatus = v)),
             ],
-          ),
-          const SizedBox(height: 16),
-          // Featured
-          SwitchListTile(
-            title: const Text('Featured Only', style: TextStyle(fontWeight: FontWeight.bold)),
-            value: _isFeatured,
-            onChanged: (val) => setState(() => _isFeatured = val),
-            contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 24),
           PrimaryButton(
@@ -412,7 +369,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               context.read<VendorProductProvider>().setFilters(
                 categoryId: _selectedCategoryId,
                 stockStatus: _stockStatus,
-                isFeaturedOnly: _isFeatured,
               );
               Navigator.pop(context);
             },

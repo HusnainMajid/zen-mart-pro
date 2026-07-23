@@ -6,7 +6,6 @@ class VendorModel {
   final String email;
   final String phone;
   final String? shopId;
-  final String profileImage;
   final String status; // e.g., 'active', 'inactive', 'suspended'
   final DateTime createdAt;
 
@@ -16,7 +15,6 @@ class VendorModel {
     required this.email,
     required this.phone,
     this.shopId,
-    required this.profileImage,
     required this.status,
     required this.createdAt,
   });
@@ -28,7 +26,6 @@ class VendorModel {
       'email': email,
       'phone': phone,
       'shopId': shopId,
-      'profileImage': profileImage,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
     };
@@ -41,7 +38,6 @@ class VendorModel {
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
       shopId: map['shopId'],
-      profileImage: map['profileImage'] ?? '',
       status: map['status'] ?? 'active',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
@@ -53,7 +49,6 @@ class VendorModel {
     String? email,
     String? phone,
     String? shopId,
-    String? profileImage,
     String? status,
     DateTime? createdAt,
   }) {
@@ -63,7 +58,6 @@ class VendorModel {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       shopId: shopId ?? this.shopId,
-      profileImage: profileImage ?? this.profileImage,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
     );

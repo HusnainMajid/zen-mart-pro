@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_dashboard_provider.dart';
 import '../../providers/shop_provider.dart';
@@ -10,11 +10,8 @@ import '../../models/product_model.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../shared/widgets/error_widget.dart';
 import '../../shared/widgets/empty_state_widget.dart';
+import '../../core/routes/routes.dart';
 import 'package:intl/intl.dart';
-import 'vendor_order_list_screen.dart';
-import 'vendor_order_details_screen.dart';
-import 'vendor_reviews_screen.dart';
-import 'vendor_reports_screen.dart';
 
 class VendorDashboard extends StatefulWidget {
   const VendorDashboard({super.key});
@@ -33,9 +30,11 @@ class _VendorDashboardState extends State<VendorDashboard> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
     final user = context.read<AuthProvider>().currentUser;
     if (user != null && user.shopId != null) {
-      context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
+      await context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
+      if (!mounted) return;
       final shop = await context.read<ShopProvider>().getShopById(user.shopId!);
       if (mounted) {
         setState(() {
@@ -55,10 +54,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
         title: const Text('Vendor Dashboard'),
         actions: [
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const VendorReportsScreen()),
-            ),
+            onPressed: () => context.push(Routes.vendorReports),
             icon: const Icon(Icons.analytics_outlined),
             tooltip: 'Reports',
           ),
@@ -105,77 +101,60 @@ class _VendorDashboardState extends State<VendorDashboard> {
   Widget _buildShopBanner() {
     return Card(
       clipBehavior: Clip.antiAlias,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Stack(
-        children: [
-          CachedNetworkImage(
-            imageUrl: _shop?.banner ?? '',
-            height: 180,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(color: Colors.grey[300]),
-            errorWidget: (context, url, error) => Container(
-              color: Colors.grey[300],
-              child: const Icon(Icons.store, size: 80, color: Colors.grey),
-            ),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).primaryColor.withAlpha(200),
+            ],
           ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withAlpha(178),
-                  ],
-                ),
+        ),
+        child: Row(
+          children: [
+            Hero(
+              tag: 'shop_logo',
+              child: CircleAvatar(
+                radius: 35,
+                backgroundColor: Colors.white,
+                child: Icon(Icons.store, size: 40, color: Theme.of(context).primaryColor),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: CircleAvatar(
-                      radius: 28,
-                      backgroundImage: _shop?.logo != null && _shop!.logo.isNotEmpty
-                          ? CachedNetworkImageProvider(_shop!.logo)
-                          : null,
-                      child: _shop?.logo == null || _shop!.logo.isEmpty
-                          ? const Icon(Icons.store)
-                          : null,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _shop?.name ?? 'My Shop',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _shop?.name ?? 'My Shop',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      _shop?.address ?? '',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    _shop?.address ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            IconButton(
+              onPressed: () => context.push(Routes.shopProfile),
+              icon: const Icon(Icons.edit, color: Colors.white),
+              tooltip: 'Edit Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -190,30 +169,35 @@ class _VendorDashboardState extends State<VendorDashboard> {
             'Orders',
             Icons.shopping_bag_outlined,
             Colors.blue,
-            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorOrderListScreen())),
+            () => context.push(Routes.vendorOrders),
           ),
           _buildActionButton(
             context,
             'Reviews',
             Icons.star_outline,
             Colors.amber,
-            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorReviewsScreen())),
+            () => context.push(Routes.vendorReviews),
           ),
           _buildActionButton(
             context,
             'Reports',
             Icons.bar_chart,
             Colors.green,
-            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorReportsScreen())),
+            () => context.push(Routes.vendorReports),
           ),
           _buildActionButton(
             context,
             'Products',
             Icons.inventory_2_outlined,
             Colors.purple,
-            () {
-              // Navigate to products list if available
-            },
+            () => context.push(Routes.vendorProducts),
+          ),
+          _buildActionButton(
+            context,
+            'Categories',
+            Icons.category_outlined,
+            Colors.teal,
+            () => context.push(Routes.vendorCategories),
           ),
         ],
       ),
@@ -252,51 +236,87 @@ class _VendorDashboardState extends State<VendorDashboard> {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: isTablet ? 3 : 2,
+      crossAxisCount: isTablet ? 4 : 2,
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
-      childAspectRatio: 1.5,
+      childAspectRatio: 1.4,
       children: [
-        _buildStatCard('Total Products', stats.totalProducts.toString(), Icons.inventory_2, Colors.blue),
-        _buildStatCard('Total Orders', stats.totalOrders.toString(), Icons.shopping_bag, Colors.purple),
-        _buildStatCard('Pending Orders', stats.pendingOrders.toString(), Icons.pending_actions, Colors.orange),
-        _buildStatCard('Revenue Today', '\$${stats.revenueToday.toStringAsFixed(2)}', Icons.today, Colors.green),
+        _buildStatCard(
+          'Total Products', 
+          stats.totalProducts.toString(), 
+          Icons.inventory_2, 
+          Colors.blue,
+          onTap: () => context.push(Routes.vendorProducts),
+        ),
+        _buildStatCard(
+          'Categories', 
+          stats.totalCategories.toString(), 
+          Icons.category, 
+          Colors.orange,
+          onTap: () => context.push(Routes.vendorCategories),
+        ),
+        _buildStatCard(
+          'Pending Orders', 
+          stats.pendingOrders.toString(), 
+          Icons.pending_actions, 
+          Colors.red,
+          onTap: () => context.push(Routes.vendorOrders),
+        ),
+        _buildStatCard(
+          'Revenue Today', 
+          '\$${stats.revenueToday.toStringAsFixed(2)}', 
+          Icons.today, 
+          Colors.green,
+          onTap: () => context.push(Routes.vendorReports),
+        ),
       ],
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color, {VoidCallback? onTap}) {
     return Card(
       elevation: 0,
+      margin: EdgeInsets.zero,
       color: color.withAlpha(25),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: color.withAlpha(51)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 28),
-            const Spacer(),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color.withAlpha(204),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 24),
+              const Spacer(),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color.withAlpha(204),
+                  ),
+                ),
               ),
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[700],
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -315,17 +335,20 @@ class _VendorDashboardState extends State<VendorDashboard> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.grey[300]!),
+            side: BorderSide(color: Colors.grey[200]!),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Weekly Revenue', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Icon(Icons.more_horiz, color: Colors.grey),
+                    const Text('Weekly Revenue', style: TextStyle(fontWeight: FontWeight.bold)),
+                    IconButton(
+                      icon: const Icon(Icons.open_in_new, size: 18, color: Colors.blue),
+                      onPressed: () => context.push(Routes.vendorReports),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -393,10 +416,15 @@ class _VendorDashboardState extends State<VendorDashboard> {
         ),
         const SizedBox(height: 12),
         if (products.isEmpty)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(child: Text('All products are in good stock')),
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: Colors.grey[100]!),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Center(child: Text('All products are in good stock', style: TextStyle(color: Colors.grey))),
             ),
           )
         else ...[
@@ -422,16 +450,21 @@ class _VendorDashboardState extends State<VendorDashboard> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: isCritical ? Colors.red.withAlpha(51) : Colors.orange.withAlpha(51)),
+        side: BorderSide(color: isCritical ? Colors.red.withAlpha(30) : Colors.orange.withAlpha(30)),
       ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey[200],
-          backgroundImage: product.imageUrl.isNotEmpty ? CachedNetworkImageProvider(product.imageUrl) : null,
-          child: product.imageUrl.isEmpty ? const Icon(Icons.inventory_2) : null,
+        onTap: () => context.push(Routes.editProduct, extra: product),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(Icons.inventory_2, color: Colors.grey, size: 24),
         ),
-        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('SKU: ${product.sku}'),
+        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        subtitle: Text('SKU: ${product.sku}', style: const TextStyle(fontSize: 12)),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
@@ -465,7 +498,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorOrderListScreen())),
+              onPressed: () => context.push(Routes.vendorOrders),
               child: const Text('View All'),
             ),
           ],
@@ -482,16 +515,14 @@ class _VendorDashboardState extends State<VendorDashboard> {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.grey[300]!),
+                  side: BorderSide(color: Colors.grey[200]!),
                 ),
                 child: ListTile(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => VendorOrderDetailsScreen(order: order)),
-                  ),
-                  title: Text('Order #${order.orderNumber}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  onTap: () => context.push(Routes.vendorOrderDetails, extra: order),
+                  title: Text('Order #${order.orderNumber}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   subtitle: Text(
                     '${order.customerName} • ${DateFormat('MMM dd').format(order.orderTime)}',
+                    style: const TextStyle(fontSize: 12),
                   ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

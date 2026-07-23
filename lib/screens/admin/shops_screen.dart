@@ -229,8 +229,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
                             address: addressController.text.trim(),
                             description: descController.text.trim(),
                             contact: contactController.text.trim(),
-                            banner: shop?.banner ?? '',
-                            logo: shop?.logo ?? '',
                             ownerId: selectedVendorId!,
                             status: status,
                             createdAt: shop?.createdAt ?? DateTime.now(),
@@ -290,9 +288,7 @@ class _ShopCard extends StatelessWidget {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: shop.logo.isNotEmpty 
-                    ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(shop.logo, fit: BoxFit.cover))
-                    : const Icon(Icons.store, color: Colors.grey),
+                child: const Icon(Icons.store, color: Colors.grey),
               ),
               title: Text(shop.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(shop.address),

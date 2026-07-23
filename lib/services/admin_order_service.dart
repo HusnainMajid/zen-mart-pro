@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/order_model.dart';
 
 class AdminOrderService {
@@ -11,6 +12,10 @@ class AdminOrderService {
       final querySnapshot = await _db.collection(_collection).orderBy('orderTime', descending: true).get();
       return querySnapshot.docs.map((doc) => OrderModel.fromMap(doc.data())).toList();
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to get orders: $e';

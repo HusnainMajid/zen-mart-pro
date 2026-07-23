@@ -43,7 +43,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 const SizedBox(height: 24),
                 Card(
                   elevation: 0,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(76),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(

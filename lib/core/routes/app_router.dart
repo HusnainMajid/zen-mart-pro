@@ -42,7 +42,6 @@ import '../../models/complaint_model.dart';
 import '../../models/product_model.dart';
 import '../../models/shop_model.dart';
 import '../../screens/admin/category_management_screen.dart';
-import '../../screens/admin/shop_banner_screen.dart';
 import '../../screens/admin/complaint_list_screen.dart';
 import '../../screens/admin/complaint_details_screen.dart';
 import 'routes.dart';
@@ -275,10 +274,6 @@ class AppRouter {
       GoRoute(
         path: Routes.categoryManagement,
         builder: (context, state) => const CategoryManagementScreen(),
-      ),
-      GoRoute(
-        path: Routes.shopBanners,
-        builder: (context, state) => const ShopBannerScreen(),
       ),
       GoRoute(
         path: Routes.allShops,

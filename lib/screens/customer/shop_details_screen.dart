@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/vendor_product_provider.dart';
 import '../../models/shop_model.dart';
@@ -32,83 +31,18 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Header with Banner and Logo
+          // Simplified Header
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 120,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: widget.shop.banner,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(color: Colors.grey[300]),
-                    errorWidget: (context, url, error) => Container(color: Colors.grey[300], child: const Icon(Icons.store, size: 50)),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.4),
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.6),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    right: 16,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                            image: DecorationImage(
-                              image: CachedNetworkImageProvider(widget.shop.logo),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.shop.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Row(
-                                children: [
-                                  Icon(Icons.star, color: Colors.amber, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    '4.8 (120 Reviews)',
-                                    style: TextStyle(color: Colors.white, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              title: Text(
+                widget.shop.name,
+                style: const TextStyle(color: Colors.white),
+              ),
+              background: Container(
+                color: Colors.blue,
+                child: const Icon(Icons.store, size: 64, color: Colors.white24),
               ),
             ),
           ),
@@ -211,14 +145,11 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
             Expanded(
               child: Stack(
                 children: [
-                  product != null
-                      ? CachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) => const Icon(Icons.image),
-                        )
-                      : Container(color: Colors.grey[300]),
+                  Container(
+                    width: double.infinity,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.inventory_2, size: 48, color: Colors.grey),
+                  ),
                   if (product?.discountPrice != null)
                     Positioned(
                       top: 8,

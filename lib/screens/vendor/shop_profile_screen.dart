@@ -1,12 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../models/shop_model.dart';
-import '../../services/storage_service.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../utils/snackbar_helper.dart';
 import 'package:intl/intl.dart';
@@ -22,14 +18,9 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final _contactController = TextEditingController();
-  final StorageService _storageService = StorageService();
   
   ShopModel? _shop;
   bool _isSaving = false;
-  Map<String, String> _businessHours = {};
-  
-  File? _newLogo;
-  File? _newBanner;
 
   @override
   void initState() {
@@ -46,34 +37,8 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
           _shop = shop;
           _descriptionController.text = shop.description;
           _contactController.text = shop.contact;
-          _businessHours = Map<String, String>.from(shop.businessHours ?? {});
-          if (_businessHours.isEmpty) {
-            _businessHours = {
-              'Monday': '09:00 - 18:00',
-              'Tuesday': '09:00 - 18:00',
-              'Wednesday': '09:00 - 18:00',
-              'Thursday': '09:00 - 18:00',
-              'Friday': '09:00 - 18:00',
-              'Saturday': '10:00 - 16:00',
-              'Sunday': 'Closed',
-            };
-          }
         });
       }
-    }
-  }
-
-  Future<void> _pickImage(bool isLogo) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        if (isLogo) {
-          _newLogo = File(pickedFile.path);
-        } else {
-          _newBanner = File(pickedFile.path);
-        }
-      });
     }
   }
 
@@ -87,29 +52,9 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      String logoUrl = _shop!.logo;
-      String bannerUrl = _shop!.banner;
-
-      if (_newLogo != null) {
-        logoUrl = await _storageService.uploadImage(
-          _newLogo!,
-          'shops/${_shop!.id}/logo_${DateTime.now().millisecondsSinceEpoch}.jpg',
-        );
-      }
-
-      if (_newBanner != null) {
-        bannerUrl = await _storageService.uploadImage(
-          _newBanner!,
-          'shops/${_shop!.id}/banner_${DateTime.now().millisecondsSinceEpoch}.jpg',
-        );
-      }
-
       final updatedShop = _shop!.copyWith(
         description: _descriptionController.text.trim(),
         contact: _contactController.text.trim(),
-        logo: logoUrl,
-        banner: bannerUrl,
-        businessHours: _businessHours,
       );
 
       await shopProvider.updateShop(updatedShop);
@@ -117,8 +62,6 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
         SnackBarHelper.showSuccess(scaffoldContext, 'Shop profile updated successfully');
         setState(() {
           _shop = updatedShop;
-          _newLogo = null;
-          _newBanner = null;
         });
       }
     } catch (e) {
@@ -155,11 +98,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildBrandingSection(),
-              const SizedBox(height: 24),
               _buildInfoSection(),
-              const SizedBox(height: 24),
-              _buildBusinessHoursSection(),
               const SizedBox(height: 24),
               _buildStatusSection(),
               const SizedBox(height: 80),
@@ -167,68 +106,6 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildBrandingSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Branding', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        // Banner
-        const Text('Shop Banner', style: TextStyle(fontWeight: FontWeight.w500)),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: () => _pickImage(false),
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-              image: _newBanner != null
-                  ? DecorationImage(image: FileImage(_newBanner!), fit: BoxFit.cover)
-                  : _shop!.banner.isNotEmpty
-                      ? DecorationImage(image: CachedNetworkImageProvider(_shop!.banner), fit: BoxFit.cover)
-                      : null,
-            ),
-            child: const Center(child: Icon(Icons.camera_alt, color: Colors.white70, size: 40)),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Logo
-        const Text('Shop Logo', style: TextStyle(fontWeight: FontWeight.w500)),
-        const SizedBox(height: 8),
-        Center(
-          child: Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.grey[200],
-                backgroundImage: _newLogo != null
-                    ? FileImage(_newLogo!)
-                    : _shop!.logo.isNotEmpty
-                        ? CachedNetworkImageProvider(_shop!.logo) as ImageProvider
-                        : null,
-                child: (_newLogo == null && _shop!.logo.isEmpty) ? const Icon(Icons.store, size: 50) : null,
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  radius: 18,
-                  child: IconButton(
-                    icon: const Icon(Icons.edit, size: 18, color: Colors.white),
-                    onPressed: () => _pickImage(true),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
@@ -259,38 +136,6 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
           keyboardType: TextInputType.phone,
           validator: (value) => value == null || value.isEmpty ? 'Contact number is required' : null,
         ),
-      ],
-    );
-  }
-
-  Widget _buildBusinessHoursSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Business Hours', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        ..._businessHours.entries.map((entry) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Row(
-              children: [
-                Expanded(flex: 2, child: Text(entry.key, style: const TextStyle(fontWeight: FontWeight.w500))),
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    initialValue: entry.value,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) => _businessHours[entry.key] = value,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
       ],
     );
   }

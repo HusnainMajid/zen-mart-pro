@@ -297,9 +297,8 @@ class _RiderCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: rider.profileImage.isNotEmpty ? NetworkImage(rider.profileImage) : null,
-          child: rider.profileImage.isEmpty ? const Icon(Icons.delivery_dining) : null,
+        leading: const CircleAvatar(
+          child: Icon(Icons.directions_bike),
         ),
         title: Text(rider.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/category_model.dart';
 
 class VendorCategoryService {
@@ -17,6 +18,12 @@ class VendorCategoryService {
       return snapshot.docs
           .map((doc) => CategoryModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
+    } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch shop categories: ${e.toString()}';
     }

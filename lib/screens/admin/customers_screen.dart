@@ -134,13 +134,8 @@ class _CustomerCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: (customer.profileImage != null && customer.profileImage!.isNotEmpty)
-              ? NetworkImage(customer.profileImage!)
-              : null,
-          child: (customer.profileImage == null || customer.profileImage!.isEmpty)
-              ? const Icon(Icons.person)
-              : null,
+        leading: const CircleAvatar(
+          child: Icon(Icons.person),
         ),
         title: Text(customer.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(

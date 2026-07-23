@@ -36,7 +36,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen> {
 
   Future<void> _updateStatus(String status) async {
     final success = await context.read<ComplaintProvider>().updateStatus(widget.complaint.id, status);
-    if (!context.mounted) return;
+    if (!mounted) return;
     if (success) {
       SnackBarHelper.showSuccess(context, 'Status updated to ${status.replaceAll('_', ' ')}');
       setState(() {
@@ -58,7 +58,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen> {
           _replyController.text.trim(),
         );
 
-    if (!context.mounted) return;
+    if (!mounted) return;
     if (success) {
       SnackBarHelper.showSuccess(context, 'Reply sent successfully');
       // If it was pending, maybe move to in_progress or resolved? 

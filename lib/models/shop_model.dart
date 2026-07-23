@@ -6,11 +6,8 @@ class ShopModel {
   final String address;
   final String description;
   final String contact;
-  final String banner;
-  final String logo;
   final String ownerId;
   final String status; // e.g., 'active', 'inactive', 'pending'
-  final Map<String, String>? businessHours;
   final DateTime createdAt;
 
   ShopModel({
@@ -19,11 +16,8 @@ class ShopModel {
     required this.address,
     required this.description,
     required this.contact,
-    required this.banner,
-    required this.logo,
     required this.ownerId,
     required this.status,
-    this.businessHours,
     required this.createdAt,
   });
 
@@ -34,11 +28,8 @@ class ShopModel {
       'address': address,
       'description': description,
       'contact': contact,
-      'banner': banner,
-      'logo': logo,
       'ownerId': ownerId,
       'status': status,
-      'businessHours': businessHours,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -50,11 +41,8 @@ class ShopModel {
       address: map['address'] ?? '',
       description: map['description'] ?? '',
       contact: map['contact'] ?? '',
-      banner: map['banner'] ?? '',
-      logo: map['logo'] ?? '',
       ownerId: map['ownerId'] ?? '',
       status: map['status'] ?? 'pending',
-      businessHours: map['businessHours'] != null ? Map<String, String>.from(map['businessHours']) : null,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
   }
@@ -65,11 +53,8 @@ class ShopModel {
     String? address,
     String? description,
     String? contact,
-    String? banner,
-    String? logo,
     String? ownerId,
     String? status,
-    Map<String, String>? businessHours,
     DateTime? createdAt,
   }) {
     return ShopModel(
@@ -78,11 +63,8 @@ class ShopModel {
       address: address ?? this.address,
       description: description ?? this.description,
       contact: contact ?? this.contact,
-      banner: banner ?? this.banner,
-      logo: logo ?? this.logo,
       ownerId: ownerId ?? this.ownerId,
       status: status ?? this.status,
-      businessHours: businessHours ?? this.businessHours,
       createdAt: createdAt ?? this.createdAt,
     );
   }

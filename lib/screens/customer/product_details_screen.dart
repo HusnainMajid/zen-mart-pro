@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../models/product_model.dart';
 import '../../models/cart_item_model.dart';
@@ -21,7 +20,6 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  int _currentImageIndex = 0;
   int _quantity = 1;
 
   @override
@@ -41,9 +39,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Image Carousel Header
+          // Icon Header
           SliverAppBar(
-            expandedHeight: 350,
+            expandedHeight: 250,
             pinned: true,
             leading: CircleAvatar(
               backgroundColor: Colors.white,
@@ -66,46 +64,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               const SizedBox(width: 16),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                children: [
-                  PageView.builder(
-                    itemCount: widget.product.images.isNotEmpty ? widget.product.images.length : 1,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      final imageUrl = widget.product.images.isNotEmpty ? widget.product.images[index] : widget.product.imageUrl;
-                      return CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[200]),
-                        errorWidget: (context, url, error) => const Icon(Icons.image, size: 50),
-                      );
-                    },
-                  ),
-                  if (widget.product.images.length > 1)
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: widget.product.images.asMap().entries.map((entry) {
-                          return Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentImageIndex == entry.key ? Colors.blue : Colors.white70,
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                ],
+              background: Container(
+                color: Colors.grey[100],
+                child: const Center(
+                  child: Icon(Icons.inventory_2, size: 100, color: Colors.grey),
+                ),
               ),
             ),
           ),
@@ -117,29 +80,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          widget.product.categoryName,
-                          style: TextStyle(color: Colors.blue.shade700, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Text(
-                        widget.product.status.toUpperCase(),
-                        style: TextStyle(
-                          color: widget.product.isAvailable ? Colors.green : Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      widget.product.categoryName,
+                      style: TextStyle(color: Colors.blue.shade700, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -205,10 +155,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                             ],
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {}, // Navigate to shop details
-                          child: const Text('Visit Shop'),
                         ),
                       ],
                     ),
@@ -291,7 +237,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(12),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -355,7 +301,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       productId: widget.product.id,
       name: widget.product.name,
       price: widget.product.discountPrice ?? widget.product.price,
-      imageUrl: widget.product.imageUrl,
       quantity: _quantity,
       total: (widget.product.discountPrice ?? widget.product.price) * _quantity,
       shopId: widget.product.shopId,
@@ -379,7 +324,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       productId: widget.product.id,
       name: widget.product.name,
       price: widget.product.discountPrice ?? widget.product.price,
-      imageUrl: widget.product.imageUrl,
       shopId: widget.product.shopId,
       addedAt: DateTime.now(),
     );

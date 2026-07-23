@@ -5,7 +5,6 @@ class WishlistModel {
   final String productId;
   final String name;
   final double price;
-  final String imageUrl;
   final String shopId;
   final DateTime addedAt;
 
@@ -14,7 +13,6 @@ class WishlistModel {
     required this.productId,
     required this.name,
     required this.price,
-    required this.imageUrl,
     required this.shopId,
     required this.addedAt,
   });
@@ -25,7 +23,6 @@ class WishlistModel {
       'productId': productId,
       'name': name,
       'price': price,
-      'imageUrl': imageUrl,
       'shopId': shopId,
       'addedAt': Timestamp.fromDate(addedAt),
     };
@@ -37,7 +34,6 @@ class WishlistModel {
       productId: map['productId'] ?? '',
       name: map['name'] ?? '',
       price: (map['price'] ?? 0.0).toDouble(),
-      imageUrl: map['imageUrl'] ?? '',
       shopId: map['shopId'] ?? '',
       addedAt: (map['addedAt'] as Timestamp).toDate(),
     );
@@ -48,7 +44,6 @@ class WishlistModel {
     String? productId,
     String? name,
     double? price,
-    String? imageUrl,
     String? shopId,
     DateTime? addedAt,
   }) {
@@ -57,7 +52,6 @@ class WishlistModel {
       productId: productId ?? this.productId,
       name: name ?? this.name,
       price: price ?? this.price,
-      imageUrl: imageUrl ?? this.imageUrl,
       shopId: shopId ?? this.shopId,
       addedAt: addedAt ?? this.addedAt,
     );

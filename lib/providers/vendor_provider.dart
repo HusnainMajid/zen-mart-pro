@@ -30,7 +30,6 @@ class VendorProvider with ChangeNotifier {
     required String password,
     required String fullName,
     required String phone,
-    String? profileImage,
   }) async {
     _setLoading(true);
     _error = null;
@@ -40,7 +39,6 @@ class VendorProvider with ChangeNotifier {
         password: password,
         fullName: fullName,
         phone: phone,
-        profileImage: profileImage,
       );
       await fetchVendors(); // Refresh list
     } catch (e) {

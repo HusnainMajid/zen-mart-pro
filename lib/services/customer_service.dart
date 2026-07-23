@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 
 class CustomerService {
@@ -14,6 +15,9 @@ class CustomerService {
           .get();
       return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
     } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('Firestore Index Required: ${e.message}');
+      }
       throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch customers: $e';

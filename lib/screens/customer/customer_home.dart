@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import '../../providers/shop_banner_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../providers/admin_product_provider.dart';
@@ -25,7 +23,6 @@ class _CustomerHomeState extends State<CustomerHome> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ShopBannerProvider>().fetchBanners();
       context.read<CategoryProvider>().fetchCategories();
       context.read<ShopProvider>().fetchShops();
       context.read<AdminProductProvider>().fetchAllProducts();
@@ -39,7 +36,6 @@ class _CustomerHomeState extends State<CustomerHome> {
         child: RefreshIndicator(
           onRefresh: () async {
             await Future.wait([
-              context.read<ShopBannerProvider>().fetchBanners(),
               context.read<CategoryProvider>().fetchCategories(),
               context.read<ShopProvider>().fetchShops(),
               context.read<AdminProductProvider>().fetchAllProducts(),
@@ -61,43 +57,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                 ),
               ),
 
-              // Promotional Banners
-              SliverToBoxAdapter(
-                child: Consumer<ShopBannerProvider>(
-                  builder: (context, bannerProvider, _) {
-                    return Skeletonizer(
-                      enabled: bannerProvider.isLoading,
-                      child: bannerProvider.banners.isEmpty && !bannerProvider.isLoading
-                          ? const SizedBox.shrink()
-                          : SizedBox(
-                              height: 180,
-                              child: PageView.builder(
-                                itemCount: bannerProvider.isLoading ? 3 : bannerProvider.banners.length,
-                                itemBuilder: (context, index) {
-                                  final banner = bannerProvider.isLoading ? null : bannerProvider.banners[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: banner != null
-                                          ? CachedNetworkImage(
-                                              imageUrl: banner.imageUrl,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) => Container(color: Colors.grey[300]),
-                                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                                            )
-                                          : Container(color: Colors.grey[300]),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                    );
-                  },
-                ),
-              ),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
               // Categories
               SliverToBoxAdapter(
@@ -186,14 +146,6 @@ class _CustomerHomeState extends State<CustomerHome> {
 
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-              // Recommended Products
-              _buildProductSection(
-                title: 'Recommended Products',
-                filter: (products) => products.where((p) => p.isFeatured).toList(),
-              ),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
               // Popular Products
               _buildProductSection(
                 title: 'Popular Products',
@@ -216,18 +168,7 @@ class _CustomerHomeState extends State<CustomerHome> {
           CircleAvatar(
             radius: 30,
             backgroundColor: Colors.blue.withAlpha(25),
-            child: category != null
-                ? ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: category.iconUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.contain,
-                      placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
-                      errorWidget: (context, url, error) => const Icon(Icons.category),
-                    ),
-                  )
-                : const Icon(Icons.category),
+            child: const Icon(Icons.category, color: Colors.blue),
           ),
           const SizedBox(height: 4),
           Text(
@@ -256,14 +197,11 @@ class _CustomerHomeState extends State<CustomerHome> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: shop != null
-                    ? CachedNetworkImage(
-                        imageUrl: shop.logo,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) => const Icon(Icons.store),
-                      )
-                    : Container(color: Colors.grey[300]),
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.store, size: 48, color: Colors.grey),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -362,14 +300,11 @@ class _CustomerHomeState extends State<CustomerHome> {
               Expanded(
                 child: Stack(
                   children: [
-                    product != null
-                        ? CachedNetworkImage(
-                            imageUrl: product.imageUrl,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => const Icon(Icons.image),
-                          )
-                        : Container(color: Colors.grey[300]),
+                    Container(
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.inventory_2, size: 48, color: Colors.grey),
+                    ),
                     if (product?.discountPrice != null)
                       Positioned(
                         top: 8,

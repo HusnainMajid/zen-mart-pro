@@ -132,15 +132,17 @@ class _AssignShopScreenState extends State<AssignShopScreen> {
   Future<void> _handleAssignment() async {
     setState(() => _isAssigning = true);
     try {
-      await context.read<ShopProvider>().assignShop(_selectedShopId!, _selectedVendorId!);
-      // We also need to update the vendor's shopId in the vendor provider or refetch
-      await context.read<VendorProvider>().fetchVendors();
+      final shopProvider = context.read<ShopProvider>();
+      final vendorProvider = context.read<VendorProvider>();
       
-      if (!context.mounted) return;
+      await shopProvider.assignShop(_selectedShopId!, _selectedVendorId!);
+      await vendorProvider.fetchVendors();
+      
+      if (!mounted) return;
       SnackBarHelper.showSuccess(context, 'Shop assigned successfully!');
       context.pop();
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       SnackBarHelper.showError(context, e.toString());
     } finally {
       if (mounted) setState(() => _isAssigning = false);

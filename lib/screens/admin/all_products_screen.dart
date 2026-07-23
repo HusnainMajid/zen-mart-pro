@@ -21,7 +21,6 @@ class AllProductsScreen extends StatefulWidget {
 class _AllProductsScreenState extends State<AllProductsScreen> {
   String _searchQuery = '';
   String? _selectedCategory;
-  String? _selectedStatus;
   String? _selectedShop;
   int _sortColumnIndex = 1;
   bool _isAscending = true;
@@ -59,9 +58,8 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
           List<ProductModel> filteredProducts = productProvider.products.where((product) {
             final matchesSearch = product.name.toLowerCase().contains(_searchQuery.toLowerCase());
             final matchesCategory = _selectedCategory == null || product.categoryId == _selectedCategory;
-            final matchesStatus = _selectedStatus == null || product.status == _selectedStatus;
             final matchesShop = _selectedShop == null || product.shopId == _selectedShop;
-            return matchesSearch && matchesCategory && matchesStatus && matchesShop;
+            return matchesSearch && matchesCategory && matchesShop;
           }).toList();
 
           // Sorting
@@ -73,7 +71,7 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
               case 4: aValue = a.categoryName; bValue = b.categoryName; break;
               case 5: aValue = a.price; bValue = b.price; break;
               case 6: aValue = a.stock; bValue = b.stock; break;
-              case 8: aValue = a.createdAt; bValue = b.createdAt; break;
+              case 7: aValue = a.createdAt; bValue = b.createdAt; break;
               default: aValue = a.name; bValue = b.name;
             }
             return _isAscending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
@@ -97,14 +95,13 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                     child: PaginatedDataTable(
                       header: const Text('Products List'),
                       columns: [
-                        const DataColumn(label: Text('Image')),
+                        const DataColumn(label: Text('Icon')),
                         DataColumn(label: const Text('Name'), onSort: _onSort),
                         DataColumn(label: const Text('Shop'), onSort: _onSort),
                         const DataColumn(label: Text('Vendor ID')),
                         DataColumn(label: const Text('Category'), onSort: _onSort),
                         DataColumn(label: const Text('Price'), onSort: _onSort, numeric: true),
                         DataColumn(label: const Text('Stock'), onSort: _onSort, numeric: true),
-                        const DataColumn(label: Text('Status')),
                         DataColumn(label: const Text('Created Date'), onSort: _onSort),
                       ],
                       source: _ProductDataSource(products: filteredProducts),
@@ -166,17 +163,6 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
           }).toList(),
           onChanged: (value) => setState(() => _selectedShop = value),
         ),
-        DropdownButton<String>(
-          value: _selectedStatus,
-          hint: const Text('Status'),
-          items: [null, 'active', 'inactive'].map((status) {
-            return DropdownMenuItem<String>(
-              value: status,
-              child: Text(status?.toUpperCase() ?? 'All Status'),
-            );
-          }).toList(),
-          onChanged: (value) => setState(() => _selectedStatus = value),
-        ),
       ],
     );
   }
@@ -193,18 +179,8 @@ class _ProductDataSource extends DataTableSource {
     final product = products[index];
 
     return DataRow(cells: [
-      DataCell(
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            image: product.imageUrl.isNotEmpty
-                ? DecorationImage(image: NetworkImage(product.imageUrl), fit: BoxFit.cover)
-                : null,
-          ),
-          child: product.imageUrl.isEmpty ? const Icon(Icons.image_not_supported) : null,
-        ),
+      const DataCell(
+        Icon(Icons.inventory_2, size: 24, color: Colors.grey),
       ),
       DataCell(Text(product.name)),
       DataCell(Text(product.shopName)),
@@ -212,25 +188,8 @@ class _ProductDataSource extends DataTableSource {
       DataCell(Text(product.categoryName)),
       DataCell(Text(CurrencyFormatter.format(product.price))),
       DataCell(Text(product.stock.toString())),
-      DataCell(_buildStatusBadge(product.status)),
       DataCell(Text(DateFormatter.formatFullDate(product.createdAt))),
     ]);
-  }
-
-  Widget _buildStatusBadge(String status) {
-    final color = status.toLowerCase() == 'active' ? Colors.green : Colors.red;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color),
-      ),
-      child: Text(
-        status.toUpperCase(),
-        style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
-      ),
-    );
   }
 
   @override

@@ -7,7 +7,6 @@ class UserModel {
   final String phoneNumber;
   final String role; // e.g., 'super_admin', 'admin', 'customer'
   final String? shopId;
-  final String? profileImage;
   final bool isActive;
   final bool isVerified;
   final DateTime createdAt;
@@ -20,7 +19,6 @@ class UserModel {
     required this.phoneNumber,
     required this.role,
     this.shopId,
-    this.profileImage,
     this.isActive = true,
     this.isVerified = false,
     required this.createdAt,
@@ -35,7 +33,6 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'role': role,
       'shopId': shopId,
-      'profileImage': profileImage,
       'isActive': isActive,
       'isVerified': isVerified,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -51,7 +48,6 @@ class UserModel {
       phoneNumber: map['phoneNumber'] ?? '',
       role: map['role'] ?? 'customer',
       shopId: map['shopId'],
-      profileImage: map['profileImage'],
       isActive: map['isActive'] ?? true,
       isVerified: map['isVerified'] ?? false,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
@@ -66,7 +62,6 @@ class UserModel {
     String? phoneNumber,
     String? role,
     String? shopId,
-    String? profileImage,
     bool? isActive,
     bool? isVerified,
     DateTime? createdAt,
@@ -79,7 +74,6 @@ class UserModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       role: role ?? this.role,
       shopId: shopId ?? this.shopId,
-      profileImage: profileImage ?? this.profileImage,
       isActive: isActive ?? this.isActive,
       isVerified: isVerified ?? this.isVerified,
       createdAt: createdAt ?? this.createdAt,

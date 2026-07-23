@@ -30,7 +30,6 @@ class RiderProvider with ChangeNotifier {
     required String password,
     required String fullName,
     required String phone,
-    String? profileImage,
   }) async {
     _setLoading(true);
     _error = null;
@@ -40,7 +39,6 @@ class RiderProvider with ChangeNotifier {
         password: password,
         fullName: fullName,
         phone: phone,
-        profileImage: profileImage,
       );
       await fetchRiders();
     } catch (e) {

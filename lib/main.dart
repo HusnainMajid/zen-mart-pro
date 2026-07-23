@@ -10,7 +10,6 @@ import 'providers/shop_provider.dart';
 import 'providers/customer_provider.dart';
 import 'providers/rider_provider.dart';
 import 'providers/category_provider.dart';
-import 'providers/shop_banner_provider.dart';
 import 'providers/complaint_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'providers/admin_product_provider.dart';
@@ -89,7 +88,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CustomerProvider()),
         ChangeNotifierProvider(create: (_) => RiderProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
-        ChangeNotifierProvider(create: (_) => ShopBannerProvider()),
         ChangeNotifierProvider(create: (_) => ComplaintProvider()),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => AdminProductProvider()),

@@ -314,9 +314,8 @@ class _VendorCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: vendor.profileImage.isNotEmpty ? NetworkImage(vendor.profileImage) : null,
-          child: vendor.profileImage.isEmpty ? const Icon(Icons.person) : null,
+        leading: const CircleAvatar(
+          child: Icon(Icons.person),
         ),
         title: Text(vendor.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(

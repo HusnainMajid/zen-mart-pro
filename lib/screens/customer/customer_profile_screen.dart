@@ -36,13 +36,10 @@ class CustomerProfileScreen extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundColor: Theme.of(context).primaryColor.withAlpha(25),
-              backgroundImage: user.profileImage != null ? NetworkImage(user.profileImage!) : null,
-              child: user.profileImage == null
-                  ? Text(
-                      user.fullName[0].toUpperCase(),
-                      style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                    )
-                  : null,
+              child: Text(
+                user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
+                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 15),
             Text(

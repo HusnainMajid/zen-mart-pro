@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -66,6 +67,12 @@ class VendorReportService {
         cancelledOrders: cancelledOrders,
         bestSellingProducts: bestSelling.take(5).toList(),
       );
+    } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to generate sales report: ${e.toString()}';
     }
@@ -121,6 +128,8 @@ class VendorReportService {
         bytes: await pdf.save(),
         filename: 'Sales_Report_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to export PDF: ${e.toString()}';
     }

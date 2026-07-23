@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/shop_provider.dart';
 import '../../models/shop_model.dart';
@@ -94,17 +93,11 @@ class _AllShopsViewState extends State<AllShopsView> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
+                child: Container(
                   width: 80,
                   height: 80,
-                  child: shop != null
-                      ? CachedNetworkImage(
-                          imageUrl: shop.logo,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(color: Colors.grey[200]),
-                          errorWidget: (context, url, error) => const Icon(Icons.store, size: 40),
-                        )
-                      : Container(color: Colors.grey[200]),
+                  color: Colors.grey[100],
+                  child: const Icon(Icons.store, size: 40, color: Colors.grey),
                 ),
               ),
               const SizedBox(width: 16),

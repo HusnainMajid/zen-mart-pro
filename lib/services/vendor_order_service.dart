@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/order_model.dart';
 
 /// Service to handle vendor-specific order operations
@@ -18,6 +19,12 @@ class VendorOrderService {
       return snapshot.docs
           .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
+    } on FirebaseException catch (e) {
+      if (e.code == 'failed-precondition') {
+        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
+        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
+      }
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to fetch shop orders: ${e.toString()}';
     }
@@ -41,6 +48,8 @@ class VendorOrderService {
       await _firestore.collection(_collection).doc(orderId).update({
         'status': targetStatus,
       });
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to update order status: ${e.toString()}';
     }
@@ -62,6 +71,8 @@ class VendorOrderService {
   Future<void> acceptOrder(String orderId) async {
     try {
       await updateOrderStatus(orderId, 'accepted');
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to accept order: ${e.toString()}';
     }
@@ -71,6 +82,8 @@ class VendorOrderService {
   Future<void> rejectOrder(String orderId) async {
     try {
       await updateOrderStatus(orderId, 'cancelled');
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
     } catch (e) {
       throw 'Failed to reject order: ${e.toString()}';
     }
