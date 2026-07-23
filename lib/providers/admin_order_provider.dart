@@ -18,18 +18,29 @@ class AdminOrderProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// Fetches all orders across all vendors.
-  Future<void> fetchAllOrders() async {
+  int get totalOrdersCount => _allOrders.length;
+  int get pendingOrdersCount => _allOrders.where((o) => o.status == 'pending').length;
+  int get completedOrdersCount => _allOrders.where((o) => o.status == 'delivered').length;
+  int get cancelledOrdersCount => _allOrders.where((o) => o.status == 'cancelled').length;
+  double get totalRevenue => _allOrders.where((o) => o.status == 'delivered').fold(0.0, (sum, o) => sum + o.total);
+
+  /// Starts listening to all orders.
+  void listenToAllOrders() {
     _setLoading(true);
-    try {
-      _allOrders = await _orderService.getAllOrders();
+    _orderService.getAllOrdersStream().listen((orders) {
+      _allOrders = orders;
       _applyFilters();
       _errorMessage = null;
-    } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
       _setLoading(false);
-    }
+    }, onError: (e) {
+      _errorMessage = e.toString();
+      _setLoading(false);
+    });
+  }
+
+  /// Alias for listenToAllOrders to satisfy existing UI calls
+  Future<void> fetchAllOrders() async {
+    listenToAllOrders();
   }
 
   /// Sets search query and applies filters.
@@ -63,16 +74,17 @@ class AdminOrderProvider with ChangeNotifier {
 
   /// Updates order status.
   Future<bool> updateStatus(String orderId, String status) async {
-    _setLoading(true);
+    _isLoading = true;
+    notifyListeners();
     try {
       await _orderService.updateOrderStatus(orderId, status);
-      await fetchAllOrders();
       return true;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

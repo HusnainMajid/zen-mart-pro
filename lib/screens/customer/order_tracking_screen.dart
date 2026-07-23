@@ -131,9 +131,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   Widget _buildVerticalTimeline(BuildContext context, String currentStatus) {
     final steps = [
       {'status': 'pending', 'title': 'Order Placed', 'subtitle': 'Your order has been received'},
-      {'status': 'confirmed', 'title': 'Accepted', 'subtitle': 'Vendor has accepted your order'},
+      {'status': 'accepted', 'title': 'Accepted', 'subtitle': 'Vendor has accepted your order'},
       {'status': 'preparing', 'title': 'Preparing', 'subtitle': 'Your items are being prepared'},
       {'status': 'ready_for_pickup', 'title': 'Ready for Pickup', 'subtitle': 'Your order is ready to be collected'},
+      {'status': 'accepted_by_rider', 'title': 'Rider Assigned', 'subtitle': 'A rider is coming to pick up your order'},
       {'status': 'picked_up', 'title': 'Picked Up', 'subtitle': 'Rider has picked up your order'},
       {'status': 'out_for_delivery', 'title': 'Out for Delivery', 'subtitle': 'Rider is heading to your location'},
       {'status': 'delivered', 'title': 'Delivered', 'subtitle': 'Enjoy your purchase!'},

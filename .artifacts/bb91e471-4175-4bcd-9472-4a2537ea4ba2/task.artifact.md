@@ -1,0 +1,7 @@
+- [ ] Update `VendorDashboardProvider` to include `fetchDashboardData`.
+- [ ] Update `AdminOrderProvider` to include `fetchAllOrders`.
+- [ ] Update `vendor_order_details_screen.dart` for correct `updateStatus` arguments.
+- [ ] Refactor `all_orders_screen.dart` to fix `_OrderDataSource`.
+- [ ] Update `admin_dashboard.dart` to fix `Future.wait`.
+- [ ] Fix method calls in `vendor_category_screen.dart`, `vendor_product_list_screen.dart`, `add_edit_product_screen.dart`, and `all_shops_screen.dart`.
+- [ ] Final verification with `flutter analyze`.

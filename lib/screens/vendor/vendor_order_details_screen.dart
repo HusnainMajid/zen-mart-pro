@@ -282,7 +282,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => _updateStatus(context, 'confirmed'),
+                  onPressed: () => _updateStatus(context, 'accepted'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -291,10 +291,10 @@ class VendorOrderDetailsScreen extends StatelessWidget {
                   child: const Text('Accept'),
                 ),
               ),
-            ] else if (order.status == 'confirmed') ...[
+            ] else if (order.status == 'accepted') ...[
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => _updateStatus(context, 'processing'),
+                  onPressed: () => _updateStatus(context, 'preparing'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -303,10 +303,10 @@ class VendorOrderDetailsScreen extends StatelessWidget {
                   child: const Text('Start Preparing'),
                 ),
               ),
-            ] else if (order.status == 'processing') ...[
+            ] else if (order.status == 'preparing') ...[
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => _updateStatus(context, 'shipped'),
+                  onPressed: () => _updateStatus(context, 'ready_for_pickup'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,
@@ -315,16 +315,13 @@ class VendorOrderDetailsScreen extends StatelessWidget {
                   child: const Text('Mark Ready for Pickup'),
                 ),
               ),
-            ] else if (order.status == 'shipped') ...[
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => _updateStatus(context, 'delivered'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+            ] else if (order.status == 'ready_for_pickup') ...[
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'Waiting for Rider to Pickup',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
                   ),
-                  child: const Text('Mark Delivered'),
                 ),
               ),
             ],

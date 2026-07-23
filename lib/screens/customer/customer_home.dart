@@ -7,6 +7,7 @@ import '../../providers/category_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../providers/admin_product_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/customer_order_provider.dart';
 import '../../core/routes/routes.dart';
 import '../../models/product_model.dart';
 import '../../models/shop_model.dart';
@@ -66,6 +67,11 @@ class _CustomerHomeState extends State<CustomerHome> {
           },
           child: CustomScrollView(
             slivers: [
+              // Order Summary
+              SliverToBoxAdapter(
+                child: _buildOrderSummary(context),
+              ),
+
               // Search Bar
               SliverToBoxAdapter(
                 child: Padding(
@@ -427,6 +433,43 @@ class _CustomerHomeState extends State<CustomerHome> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildOrderSummary(BuildContext context) {
+    return Consumer<CustomerOrderProvider>(
+      builder: (context, provider, _) {
+        final activeOrders = provider.orders.where((o) => o.status != 'delivered' && o.status != 'cancelled').length;
+        if (activeOrders == 0) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: InkWell(
+            onTap: () => context.push(Routes.orderHistory),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withAlpha(25),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withAlpha(51)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.delivery_dining, color: Colors.blue),
+                  const SizedBox(width: 12),
+                  Text(
+                    'You have $activeOrders active orders',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                  ),
+                  const Spacer(),
+                  const Text('Track', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                  const Icon(Icons.chevron_right, color: Colors.blue, size: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -24,18 +24,18 @@ class VendorOrderProvider with ChangeNotifier {
   String? get selectedStatus => _selectedStatus;
   DateTimeRange? get dateRange => _dateRange;
 
-  /// Fetches all orders for a specific shop.
-  Future<void> fetchOrders(String shopId) async {
+  /// Starts listening to shop orders.
+  void listenToOrders(String shopId) {
     _setLoading(true);
-    try {
-      _allOrders = await _orderService.getShopOrders(shopId);
+    _orderService.getShopOrdersStream(shopId).listen((orders) {
+      _allOrders = orders;
       _applyFilters();
       _errorMessage = null;
-    } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
       _setLoading(false);
-    }
+    }, onError: (e) {
+      _errorMessage = e.toString();
+      _setLoading(false);
+    });
   }
 
   void _applyFilters() {
@@ -85,46 +85,49 @@ class VendorOrderProvider with ChangeNotifier {
 
   /// Updates order status.
   Future<bool> updateStatus(String orderId, String newStatus, String shopId) async {
-    _setLoading(true);
+    _isLoading = true;
+    notifyListeners();
     try {
       await _orderService.updateOrderStatus(orderId, newStatus);
-      await fetchOrders(shopId);
       return true;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   /// Accepts an order.
-  Future<bool> acceptOrder(String orderId, String shopId) async {
-    _setLoading(true);
+  Future<bool> acceptOrder(String orderId) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       await _orderService.acceptOrder(orderId);
-      await fetchOrders(shopId);
       return true;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   /// Rejects an order.
-  Future<bool> rejectOrder(String orderId, String shopId) async {
-    _setLoading(true);
+  Future<bool> rejectOrder(String orderId) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       await _orderService.rejectOrder(orderId);
-      await fetchOrders(shopId);
       return true;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

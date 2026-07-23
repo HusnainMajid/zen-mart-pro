@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/rider_order_provider.dart';
+import '../../utils/snackbar_helper.dart';
 
 class RiderDashboard extends StatefulWidget {
   const RiderDashboard({super.key});
@@ -11,6 +13,18 @@ class RiderDashboard extends StatefulWidget {
 
 class _RiderDashboardState extends State<RiderDashboard> {
   bool _isOnline = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RiderOrderProvider>().listenToAvailableOrders();
+      final user = context.read<AuthProvider>().currentUser;
+      if (user != null) {
+        context.read<RiderOrderProvider>().listenToMyDeliveries(user.uid);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +80,9 @@ class _RiderDashboardState extends State<RiderDashboard> {
               const SizedBox(height: 24),
               _buildStatsGrid(context),
               const SizedBox(height: 32),
-              _buildRecentRequests(context),
+              _buildMyDeliveries(context),
+              const SizedBox(height: 32),
+              _buildAvailableRequests(context),
               const SizedBox(height: 40),
             ],
           ),
@@ -165,8 +181,8 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget _buildStatsGrid(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return Consumer<RiderOrderProvider>(
+      builder: (context, provider, _) {
         return GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -175,13 +191,13 @@ class _RiderDashboardState extends State<RiderDashboard> {
           mainAxisSpacing: 16,
           childAspectRatio: 1.3,
           children: [
-            _buildStatCard(context, 'Active Orders', '0', Icons.shopping_basket_outlined, Colors.orange),
-            _buildStatCard(context, 'Delivered', '12', Icons.task_alt, Colors.green),
-            _buildStatCard(context, 'Earnings', '\$145.00', Icons.account_balance_wallet_outlined, Colors.blue),
+            _buildStatCard(context, 'Active Orders', provider.activeDeliveriesCount.toString(), Icons.shopping_basket_outlined, Colors.orange),
+            _buildStatCard(context, 'Delivered', provider.completedDeliveriesCount.toString(), Icons.task_alt, Colors.green),
+            _buildStatCard(context, 'Earnings', '\$${provider.totalEarnings.toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, Colors.blue),
             _buildStatCard(context, 'Rating', '4.8', Icons.stars_outlined, Colors.purple),
           ],
         );
-      }
+      },
     );
   }
 
@@ -230,7 +246,55 @@ class _RiderDashboardState extends State<RiderDashboard> {
     );
   }
 
-  Widget _buildRecentRequests(BuildContext context) {
+  Widget _buildMyDeliveries(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'My Active Deliveries',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 12),
+        Consumer<RiderOrderProvider>(
+          builder: (context, provider, _) {
+            if (provider.myDeliveries.isEmpty) {
+              return _buildEmptyState('No active deliveries');
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: provider.myDeliveries.length,
+              itemBuilder: (context, index) {
+                final order = provider.myDeliveries[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    title: Text('Order #${order.orderNumber}'),
+                    subtitle: Text('Status: ${order.status.toUpperCase()}\nTo: ${order.deliveryAddress}'),
+                    trailing: DropdownButton<String>(
+                      hint: const Text('Update'),
+                      items: ['accepted_by_rider', 'picked_up', 'out_for_delivery', 'delivered'].map((s) {
+                        return DropdownMenuItem(value: s, child: Text(s.replaceAll('_', ' ').toUpperCase()));
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          provider.updateStatus(order.id, val);
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvailableRequests(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -238,7 +302,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Delivery Requests',
+              'Available Requests',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -253,7 +317,44 @@ class _RiderDashboardState extends State<RiderDashboard> {
         if (!_isOnline)
           _buildEmptyState('Go online to see requests')
         else
-          _buildEmptyState('No pending requests found'),
+          Consumer<RiderOrderProvider>(
+            builder: (context, provider, _) {
+              if (provider.availableOrders.isEmpty) {
+                return _buildEmptyState('No pending requests found');
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: provider.availableOrders.length,
+                itemBuilder: (context, index) {
+                  final order = provider.availableOrders[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text('Order #${order.orderNumber}'),
+                      subtitle: Text('From: ${order.shopName}\nTo: ${order.deliveryAddress}'),
+                      trailing: ElevatedButton(
+                        onPressed: () async {
+                          final user = context.read<AuthProvider>().currentUser;
+                          if (user != null) {
+                            final success = await provider.acceptDelivery(order.id, user.uid, user.fullName);
+                          if (mounted) {
+                            if (success) {
+                              SnackBarHelper.showSuccess(context, 'Delivery accepted!');
+                            } else {
+                              SnackBarHelper.showError(context, provider.errorMessage ?? 'Failed to accept delivery');
+                            }
+                          }
+                          }
+                        },
+                        child: const Text('Accept'),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
       ],
     );
   }

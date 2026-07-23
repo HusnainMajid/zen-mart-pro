@@ -33,7 +33,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
     if (!mounted) return;
     final user = context.read<AuthProvider>().currentUser;
     if (user != null && user.shopId != null) {
-      await context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
+      context.read<VendorDashboardProvider>().listenToDashboardData(user.uid, user.shopId!);
       if (!mounted) return;
       final shop = await context.read<ShopProvider>().getShopById(user.shopId!);
       if (mounted) {

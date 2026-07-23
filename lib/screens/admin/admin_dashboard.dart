@@ -6,7 +6,9 @@ import '../../providers/vendor_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../providers/customer_provider.dart';
 import '../../providers/rider_provider.dart';
+import '../../providers/admin_order_provider.dart';
 import '../../shared/widgets/loading_widget.dart';
+import '../../utils/currency_formatter.dart';
 import 'admin_drawer.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -25,11 +27,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Future<void> _refreshData() async {
     // Fetch all counts
-    await Future.wait([
+    await Future.wait<void>([
       context.read<VendorProvider>().fetchVendors(),
       context.read<ShopProvider>().fetchShops(),
       context.read<CustomerProvider>().fetchCustomers(),
       context.read<RiderProvider>().fetchRiders(),
+      context.read<AdminOrderProvider>().fetchAllOrders(),
     ]);
   }
 
@@ -112,11 +115,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           onTap: () => context.push(Routes.riders),
                         ),
                       ),
+                      Consumer<AdminOrderProvider>(
+                        builder: (context, p, _) => _SummaryCard(
+                          title: 'Total Orders',
+                          count: p.totalOrdersCount.toString(),
+                          icon: Icons.receipt_long,
+                          color: Colors.indigo,
+                          isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.allOrders),
+                        ),
+                      ),
+                      Consumer<AdminOrderProvider>(
+                        builder: (context, p, _) => _SummaryCard(
+                          title: 'Total Revenue',
+                          count: CurrencyFormatter.format(p.totalRevenue),
+                          icon: Icons.attach_money,
+                          color: Colors.teal,
+                          isLoading: p.isLoading,
+                          onTap: () => context.push(Routes.analytics),
+                        ),
+                      ),
                       _SummaryCard(
-                        title: 'Analytics',
+                        title: 'System Analytics',
                         count: 'View',
                         icon: Icons.analytics,
-                        color: Colors.teal,
+                        color: Colors.blueGrey,
                         onTap: () => context.push(Routes.analytics),
                       ),
                     ],

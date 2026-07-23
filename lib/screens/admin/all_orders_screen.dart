@@ -29,7 +29,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AdminOrderProvider>().fetchAllOrders();
+      context.read<AdminOrderProvider>().listenToAllOrders();
     });
   }
 
@@ -153,10 +153,10 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
         DropdownButton<String>(
           value: _selectedStatus,
           hint: const Text('Status'),
-          items: [null, 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) {
+          items: [null, 'pending', 'accepted', 'preparing', 'ready_for_pickup', 'picked_up', 'out_for_delivery', 'delivered', 'cancelled'].map((status) {
             return DropdownMenuItem<String>(
               value: status,
-              child: Text(status?.toUpperCase() ?? 'All Status'),
+              child: Text(status?.toUpperCase().replaceAll('_', ' ') ?? 'All Status'),
             );
           }).toList(),
           onChanged: (value) => setState(() => _selectedStatus = value),
@@ -221,7 +221,11 @@ class _OrderDataSource extends DataTableSource {
       case 'delivered': color = Colors.green; break;
       case 'pending': color = Colors.orange; break;
       case 'cancelled': color = Colors.red; break;
-      case 'shipped': color = Colors.blue; break;
+      case 'accepted': color = Colors.blue; break;
+      case 'preparing': color = Colors.purple; break;
+      case 'ready_for_pickup': color = Colors.indigo; break;
+      case 'picked_up': color = Colors.cyan; break;
+      case 'out_for_delivery': color = Colors.teal; break;
       default: color = Colors.grey;
     }
     return Container(
@@ -232,7 +236,7 @@ class _OrderDataSource extends DataTableSource {
         border: Border.all(color: color),
       ),
       child: Text(
-        status.toUpperCase(),
+        status.toUpperCase().replaceAll('_', ' '),
         style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
       ),
     );

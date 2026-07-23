@@ -6,20 +6,15 @@ class AdminOrderService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String _collection = 'orders';
 
-  /// Gets all orders across all vendors/shops for the Super Admin.
-  Future<List<OrderModel>> getAllOrders() async {
-    try {
-      final querySnapshot = await _db.collection(_collection).orderBy('orderTime', descending: true).get();
-      return querySnapshot.docs.map((doc) => OrderModel.fromMap(doc.data())).toList();
-    } on FirebaseException catch (e) {
-      if (e.code == 'failed-precondition') {
-        debugPrint('CRITICAL: Firestore index required. Create it here: ${e.message}');
-        throw 'A required Firestore index is missing. Please check the logs or create it using the link: ${e.message}';
-      }
-      throw 'Firestore Error [${e.code}]: ${e.message}';
-    } catch (e) {
-      throw 'Failed to get orders: $e';
-    }
+  /// Gets all orders stream across all vendors/shops for the Super Admin.
+  Stream<List<OrderModel>> getAllOrdersStream() {
+    return _db
+        .collection(_collection)
+        .orderBy('orderTime', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => OrderModel.fromMap(doc.data()))
+            .toList());
   }
 
   /// Updates order status (Admin capability).

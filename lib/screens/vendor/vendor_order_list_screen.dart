@@ -27,7 +27,7 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
   void _loadOrders() {
     final user = context.read<AuthProvider>().currentUser;
     if (user != null && user.shopId != null) {
-      context.read<VendorOrderProvider>().fetchOrders(user.shopId!);
+      context.read<VendorOrderProvider>().listenToOrders(user.shopId!);
     }
   }
 
@@ -97,21 +97,21 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
   }
 
   Widget _buildStatusChips(VendorOrderProvider provider) {
-    final statuses = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+    final statuses = ['All', 'Pending', 'Accepted', 'Preparing', 'Ready_for_pickup', 'Shipped', 'Delivered', 'Cancelled'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: statuses.map((status) {
           final isSelected = (status == 'All' && provider.selectedStatus == null) ||
-              (status == provider.selectedStatus);
+              (status.toLowerCase() == provider.selectedStatus?.toLowerCase());
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: FilterChip(
-              label: Text(status),
+              label: Text(status.replaceAll('_', ' ')),
               selected: isSelected,
               onSelected: (selected) {
-                provider.setStatusFilter(status);
+                provider.setStatusFilter(status == 'All' ? null : status.toLowerCase());
               },
             ),
           );
@@ -198,20 +198,14 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return Colors.orange;
-      case 'confirmed':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'shipped':
-        return Colors.indigo;
-      case 'delivered':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
+      case 'pending': return Colors.orange;
+      case 'accepted': return Colors.blue;
+      case 'preparing': return Colors.purple;
+      case 'ready_for_pickup': return Colors.indigo;
+      case 'shipped': return Colors.blue;
+      case 'delivered': return Colors.green;
+      case 'cancelled': return Colors.red;
+      default: return Colors.grey;
     }
   }
 }
