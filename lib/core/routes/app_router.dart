@@ -25,6 +25,7 @@ import '../../screens/customer/customer_home.dart';
 import '../../screens/customer/customer_main_nav.dart';
 import '../../screens/customer/cart_screen.dart';
 import '../../screens/customer/checkout_screen.dart';
+import '../../screens/customer/order_history_screen.dart';
 import '../../screens/customer/order_tracking_screen.dart';
 import '../../screens/customer/address_list_screen.dart';
 import '../../screens/customer/wishlist_screen.dart';
@@ -116,6 +117,7 @@ class AppRouter {
         Routes.customerMain,
         Routes.cart,
         Routes.checkout,
+        Routes.orderHistory,
         Routes.orderTracking,
         Routes.addresses,
         Routes.notifications,
@@ -223,6 +225,10 @@ class AppRouter {
       GoRoute(
         path: Routes.checkout,
         builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: Routes.orderHistory,
+        builder: (context, state) => const OrderHistoryScreen(),
       ),
       GoRoute(
         path: Routes.orderTracking,

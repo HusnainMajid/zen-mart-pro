@@ -24,6 +24,20 @@ class AdminOrderProvider with ChangeNotifier {
   int get cancelledOrdersCount => _allOrders.where((o) => o.status == 'cancelled').length;
   double get totalRevenue => _allOrders.where((o) => o.status == 'delivered').fold(0.0, (sum, o) => sum + o.total);
 
+  /// Fetches all orders once (alternative to listening).
+  Future<void> fetchAllOrders() async {
+    _setLoading(true);
+    try {
+      _allOrders = await _orderService.getAllOrdersOnce();
+      _applyFilters();
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   /// Starts listening to all orders.
   void listenToAllOrders() {
     _setLoading(true);
@@ -36,11 +50,6 @@ class AdminOrderProvider with ChangeNotifier {
       _errorMessage = e.toString();
       _setLoading(false);
     });
-  }
-
-  /// Alias for listenToAllOrders to satisfy existing UI calls
-  Future<void> fetchAllOrders() async {
-    listenToAllOrders();
   }
 
   /// Sets search query and applies filters.

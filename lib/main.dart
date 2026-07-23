@@ -106,7 +106,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CustomerOrderProvider()),
         ChangeNotifierProvider(create: (_) => RiderOrderProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
-          create: (context) => SessionProvider(context.read<AuthProvider>()),
+          create: (context) {
+            final sessionProvider = SessionProvider(context.read<AuthProvider>());
+            // Pass all providers that need resetting
+            sessionProvider.registerResetter(() {
+              context.read<VendorDashboardProvider>().reset();
+              context.read<VendorOrderProvider>().clearFilters();
+              context.read<VendorProductProvider>().fetchShopProducts(''); // Force clear or similar
+            });
+            return sessionProvider;
+          },
           update: (context, auth, previous) => previous!..update(auth),
         ),
         ProxyProvider2<AuthProvider, SessionProvider, AppRouter>(

@@ -18,6 +18,16 @@ class VendorOrderService {
             .toList());
   }
 
+  /// Gets all orders for a shop once.
+  Future<List<OrderModel>> getShopOrdersOnce(String shopId) async {
+    final snapshot = await _firestore
+        .collection(_collection)
+        .where('shopId', isEqualTo: shopId)
+        .orderBy('orderTime', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => OrderModel.fromMap(doc.data())).toList();
+  }
+
   /// Update order status with validation
   /// Allowed transitions: Pending -> Accepted -> Preparing -> Ready For Pickup
   Future<void> updateOrderStatus(String orderId, String newStatus) async {
@@ -45,7 +55,7 @@ class VendorOrderService {
 
   /// Validates status transitions based on vendor workflow
   bool _isValidTransition(String current, String next) {
-    final Map<String, List<String>> allowedTransitions = {
+    const Map<String, List<String>> allowedTransitions = {
       'pending': ['accepted', 'cancelled'],
       'accepted': ['preparing', 'cancelled'],
       'preparing': ['ready_for_pickup', 'cancelled'],

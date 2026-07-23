@@ -338,13 +338,12 @@ class _RiderDashboardState extends State<RiderDashboard> {
                           final user = context.read<AuthProvider>().currentUser;
                           if (user != null) {
                             final success = await provider.acceptDelivery(order.id, user.uid, user.fullName);
-                          if (mounted) {
+                            if (!context.mounted) return;
                             if (success) {
                               SnackBarHelper.showSuccess(context, 'Delivery accepted!');
                             } else {
                               SnackBarHelper.showError(context, provider.errorMessage ?? 'Failed to accept delivery');
                             }
-                          }
                           }
                         },
                         child: const Text('Accept'),

@@ -1,0 +1,3 @@
+- [ ] Add the missing composite index to the Firebase Console: Collection `orders`, fields `shopId` ASC and `orderTime` DESC.
+- [ ] Wait for the index to show status "Enabled" in the Firebase Console.
+- [ ] Test the Vendor Dashboard in the app by clicking "Retry".

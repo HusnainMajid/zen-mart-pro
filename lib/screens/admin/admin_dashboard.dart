@@ -27,7 +27,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Future<void> _refreshData() async {
     // Fetch all counts
-    await Future.wait<void>([
+    await Future.wait([
       context.read<VendorProvider>().fetchVendors(),
       context.read<ShopProvider>().fetchShops(),
       context.read<CustomerProvider>().fetchCustomers(),

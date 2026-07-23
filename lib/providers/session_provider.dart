@@ -4,8 +4,22 @@ import 'auth_provider.dart';
 class SessionProvider with ChangeNotifier {
   AuthProvider _authProvider;
   bool _isInitialized = false;
+  VoidCallback? _onLogoutReset;
 
-  SessionProvider(this._authProvider);
+  SessionProvider(this._authProvider) {
+    _authProvider.addListener(_handleAuthChange);
+  }
+
+  void registerResetter(VoidCallback callback) {
+    _onLogoutReset = callback;
+  }
+
+  void _handleAuthChange() {
+    if (_authProvider.currentUser == null) {
+      debugPrint('SessionProvider: User logged out, triggering resets');
+      _onLogoutReset?.call();
+    }
+  }
 
   bool get isInitialized => _isInitialized;
   AuthProvider get authProvider => _authProvider;

@@ -29,11 +29,23 @@ class _VendorDashboardState extends State<VendorDashboard> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
   }
 
+  @override
+  void dispose() {
+    context.read<VendorDashboardProvider>().reset();
+    super.dispose();
+  }
+
   Future<void> _loadData() async {
     if (!mounted) return;
-    final user = context.read<AuthProvider>().currentUser;
+    
+    // Ensure AuthProvider has data
+    final authProvider = context.read<AuthProvider>();
+    debugPrint('VendorDashboard: _loadData, current user: ${authProvider.currentUser?.uid}');
+    
+    final user = authProvider.currentUser;
     if (user != null && user.shopId != null) {
       context.read<VendorDashboardProvider>().listenToDashboardData(user.uid, user.shopId!);
+      
       if (!mounted) return;
       final shop = await context.read<ShopProvider>().getShopById(user.shopId!);
       if (mounted) {
@@ -41,6 +53,8 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _shop = shop;
         });
       }
+    } else {
+      debugPrint('VendorDashboard: User or ShopId is null, cannot load data');
     }
   }
 

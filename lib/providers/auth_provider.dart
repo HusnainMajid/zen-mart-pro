@@ -124,7 +124,7 @@ class AuthProvider with ChangeNotifier {
     try {
       await _authService.signOut();
       _currentUser = null;
-      notifyListeners();
+      notifyListeners(); 
     } catch (e) {
       rethrow;
     } finally {

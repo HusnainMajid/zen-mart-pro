@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import '../models/order_model.dart';
 
 class AdminOrderService {
@@ -15,6 +14,15 @@ class AdminOrderService {
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data()))
             .toList());
+  }
+
+  /// Gets all orders once.
+  Future<List<OrderModel>> getAllOrdersOnce() async {
+    final snapshot = await _db
+        .collection(_collection)
+        .orderBy('orderTime', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => OrderModel.fromMap(doc.data())).toList();
   }
 
   /// Updates order status (Admin capability).

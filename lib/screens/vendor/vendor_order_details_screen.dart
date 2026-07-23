@@ -333,7 +333,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
 
   Future<void> _updateStatus(BuildContext context, String newStatus) async {
     final provider = context.read<VendorOrderProvider>();
-    final success = await provider.updateStatus(order.id, newStatus, order.shopId);
+    final success = await provider.updateStatus(order.id, newStatus);
     
     if (context.mounted) {
       if (success) {

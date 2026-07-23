@@ -84,7 +84,7 @@ class VendorOrderProvider with ChangeNotifier {
   }
 
   /// Updates order status.
-  Future<bool> updateStatus(String orderId, String newStatus, String shopId) async {
+  Future<bool> updateStatus(String orderId, String newStatus) async {
     _isLoading = true;
     notifyListeners();
     try {

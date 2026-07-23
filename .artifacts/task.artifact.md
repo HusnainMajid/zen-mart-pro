@@ -1,0 +1,7 @@
+- [ ] Fix `lib/services/vendor_order_service.dart`
+- [ ] Fix `lib/providers/vendor_dashboard_provider.dart`
+- [ ] Fix `lib/providers/vendor_order_provider.dart`
+- [ ] Fix `lib/core/routes/app_router.dart`
+- [ ] Fix `lib/screens/admin/admin_dashboard.dart`
+- [ ] Fix `lib/screens/admin/all_orders_screen.dart`
+- [ ] Fix `lib/screens/rider/rider_dashboard.dart`
