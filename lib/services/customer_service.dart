@@ -36,4 +36,18 @@ class CustomerService {
       throw 'Failed to update customer status: $e';
     }
   }
+
+  // Update customer profile
+  Future<void> updateProfile(UserModel user) async {
+    try {
+      await _db.collection(_collection).doc(user.uid).update({
+        'fullName': user.fullName,
+        'phoneNumber': user.phoneNumber,
+      });
+    } on FirebaseException catch (e) {
+      throw 'Firestore Error [${e.code}]: ${e.message}';
+    } catch (e) {
+      throw 'Failed to update profile: $e';
+    }
+  }
 }

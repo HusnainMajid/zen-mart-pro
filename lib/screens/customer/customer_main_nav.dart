@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/cart_provider.dart';
 import 'customer_home.dart';
 import 'all_shops_view.dart';
+import 'cart_screen.dart';
 import 'order_history_screen.dart';
 import 'customer_profile_screen.dart';
 
@@ -17,6 +20,7 @@ class _CustomerMainNavState extends State<CustomerMainNav> {
   final List<Widget> _screens = [
     const CustomerHome(),
     const AllShopsView(),
+    const CartScreen(),
     const OrderHistoryScreen(),
     const CustomerProfileScreen(),
   ];
@@ -35,23 +39,34 @@ class _CustomerMainNavState extends State<CustomerMainNav> {
             _selectedIndex = index;
           });
         },
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.store_outlined),
             selectedIcon: Icon(Icons.store),
             label: 'Shops',
           ),
           NavigationDestination(
+            icon: Consumer<CartProvider>(
+              builder: (context, cart, _) => Badge.count(
+                count: cart.items.length,
+                isLabelVisible: cart.items.isNotEmpty,
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+            ),
+            selectedIcon: const Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          const NavigationDestination(
             icon: Icon(Icons.shopping_bag_outlined),
             selectedIcon: Icon(Icons.shopping_bag),
             label: 'Orders',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Profile',

@@ -33,7 +33,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
         slivers: [
           // Simplified Header
           SliverAppBar(
-            expandedHeight: 120,
+            expandedHeight: 150,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
@@ -54,14 +54,51 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'About Shop',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'About Shop',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: widget.shop.status == 'active' ? Colors.green.withAlpha(25) : Colors.red.withAlpha(25),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: widget.shop.status == 'active' ? Colors.green : Colors.red),
+                        ),
+                        child: Text(
+                          widget.shop.status == 'active' ? 'OPEN' : 'CLOSED',
+                          style: TextStyle(
+                            color: widget.shop.status == 'active' ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.shop.description,
                     style: TextStyle(color: Colors.grey[700], height: 1.5),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(widget.shop.address, style: const TextStyle(color: Colors.grey))),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.phone, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(widget.shop.contact, style: const TextStyle(color: Colors.grey)),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
@@ -87,7 +124,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                     child: SliverGrid(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 0.75,
+                        childAspectRatio: 0.8,
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
                       ),

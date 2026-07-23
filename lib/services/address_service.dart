@@ -9,14 +9,18 @@ class AddressService {
   String? get _userId => _auth.currentUser?.uid;
 
   CollectionReference get _addressCollection {
-    if (_userId == null) throw 'User must be logged in to access addresses.';
-    return _db.collection('users').doc(_userId).collection('addresses');
+    return _db.collection('customer_addresses');
   }
 
-  // Get addresses stream
+  // Get addresses stream filtered by userId
   Stream<List<AddressModel>> getAddresses() {
     try {
-      return _addressCollection.snapshots().map((snapshot) {
+      if (_userId == null) return Stream.value([]);
+      
+      return _addressCollection
+          .where('userId', isEqualTo: _userId)
+          .snapshots()
+          .map((snapshot) {
         return snapshot.docs
             .map((doc) => AddressModel.fromMap(doc.data() as Map<String, dynamic>))
             .toList();
@@ -29,8 +33,13 @@ class AddressService {
   // Add new address
   Future<void> addAddress(AddressModel address) async {
     try {
+      if (_userId == null) throw 'User must be logged in to add address.';
+      
       final docRef = _addressCollection.doc();
-      final newAddress = address.copyWith(id: docRef.id);
+      final newAddress = address.copyWith(
+        id: docRef.id,
+        userId: _userId,
+      );
       
       if (newAddress.isDefault) {
         await _clearDefaultAddress();
@@ -73,9 +82,15 @@ class AddressService {
     }
   }
 
-  // Helper to clear existing default address
+  // Helper to clear existing default address for current user only
   Future<void> _clearDefaultAddress() async {
-    final query = await _addressCollection.where('isDefault', isEqualTo: true).get();
+    if (_userId == null) return;
+    
+    final query = await _addressCollection
+        .where('userId', isEqualTo: _userId)
+        .where('isDefault', isEqualTo: true)
+        .get();
+        
     final batch = _db.batch();
     for (var doc in query.docs) {
       batch.update(doc.reference, {'isDefault': false});

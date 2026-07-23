@@ -18,7 +18,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rider Dashboard'),
+        title: const Text('Rider Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             onPressed: () => context.read<AuthProvider>().logout(),
@@ -27,39 +27,49 @@ class _RiderDashboardState extends State<RiderDashboard> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome, ${user?.fullName ?? 'Rider'}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // Implement refresh logic if needed
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome, ${user?.fullName ?? 'Rider'}',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Let\'s deliver some smiles today!',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                      ],
                     ),
-                    const Text(
-                      'Let\'s deliver some smiles today!',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                _buildOnlineStatusIndicator(),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildStatusCard(context),
-            const SizedBox(height: 24),
-            _buildStatsGrid(context),
-            const SizedBox(height: 32),
-            _buildRecentRequests(context),
-          ],
+                  ),
+                  _buildOnlineStatusIndicator(),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildStatusCard(context),
+              const SizedBox(height: 24),
+              _buildStatsGrid(context),
+              const SizedBox(height: 32),
+              _buildRecentRequests(context),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -71,7 +81,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
       decoration: BoxDecoration(
         color: _isOnline ? Colors.green.withAlpha(25) : Colors.red.withAlpha(25),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _isOnline ? Colors.green : Colors.red),
+        border: Border.all(color: _isOnline ? Colors.green : Colors.red, width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -99,21 +109,24 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget _buildStatusCard(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: _isOnline ? Colors.blue.withAlpha(25) : Colors.grey.withAlpha(25),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: _isOnline ? Colors.blue.withAlpha(75) : Colors.grey.withAlpha(75)),
+    return Container(
+      decoration: BoxDecoration(
+        color: _isOnline ? Colors.blue.withAlpha(20) : Colors.grey.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _isOnline ? Colors.blue.withAlpha(100) : Colors.grey.withAlpha(100), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: _isOnline ? Colors.blue : Colors.grey,
-              child: const Icon(Icons.delivery_dining, color: Colors.white, size: 30),
+            Container(
+              height: 56,
+              width: 56,
+              decoration: BoxDecoration(
+                color: _isOnline ? Colors.blue : Colors.grey,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.delivery_dining, color: Colors.white, size: 32),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -124,21 +137,26 @@ class _RiderDashboardState extends State<RiderDashboard> {
                     _isOnline ? 'Ready for Orders' : 'Currently Offline',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     _isOnline ? 'Waiting for new requests...' : 'Go online to start receiving orders',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                 ],
               ),
             ),
-            Switch.adaptive(
-              value: _isOnline,
-              activeThumbColor: Colors.blue,
-              onChanged: (val) {
-                setState(() {
-                  _isOnline = val;
-                });
-              },
+            Transform.scale(
+              scale: 0.9,
+              child: Switch.adaptive(
+                value: _isOnline,
+                activeTrackColor: Colors.blue.withAlpha(100),
+                activeThumbColor: Colors.blue,
+                onChanged: (val) {
+                  setState(() {
+                    _isOnline = val;
+                  });
+                },
+              ),
             ),
           ],
         ),
@@ -147,19 +165,23 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget _buildStatsGrid(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: 1.3,
-      children: [
-        _buildStatCard(context, 'Active Orders', '0', Icons.shopping_basket, Colors.orange),
-        _buildStatCard(context, 'Delivered', '12', Icons.task_alt, Colors.green),
-        _buildStatCard(context, 'Earnings', '\$145.00', Icons.account_balance_wallet, Colors.blue),
-        _buildStatCard(context, 'Rating', '4.8', Icons.stars, Colors.purple),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.3,
+          children: [
+            _buildStatCard(context, 'Active Orders', '0', Icons.shopping_basket_outlined, Colors.orange),
+            _buildStatCard(context, 'Delivered', '12', Icons.task_alt, Colors.green),
+            _buildStatCard(context, 'Earnings', '\$145.00', Icons.account_balance_wallet_outlined, Colors.blue),
+            _buildStatCard(context, 'Rating', '4.8', Icons.stars_outlined, Colors.purple),
+          ],
+        );
+      }
     );
   }
 
@@ -168,42 +190,40 @@ class _RiderDashboardState extends State<RiderDashboard> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(12),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withAlpha(10),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withAlpha(25),
-              shape: BoxShape.circle,
+              color: color.withAlpha(20),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 24),
           ),
           const Spacer(),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ),
-          Flexible(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -223,10 +243,13 @@ class _RiderDashboardState extends State<RiderDashboard> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            TextButton(onPressed: () {}, child: const Text('View All')),
+            TextButton(
+              onPressed: () {}, 
+              child: const Text('View All', style: TextStyle(fontWeight: FontWeight.bold))
+            ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         if (!_isOnline)
           _buildEmptyState('Go online to see requests')
         else
@@ -236,26 +259,24 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget _buildEmptyState(String message) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.withAlpha(51)),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 48),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withAlpha(30)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.location_off_outlined, size: 60, color: Colors.grey[300]),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                style: const TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.location_off_outlined, size: 64, color: Colors.grey[200]),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w500),
           ),
-        ),
+        ],
       ),
     );
   }

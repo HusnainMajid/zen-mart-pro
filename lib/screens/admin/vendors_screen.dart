@@ -313,26 +313,44 @@ class _VendorCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.person),
-        ),
-        title: Text(vendor.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(vendor.email),
-            const SizedBox(height: 4),
-            _StatusBadge(status: vendor.status),
-          ],
-        ),
-        isThreeLine: true,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
-            IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: onDelete),
-          ],
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: ListTile(
+          isThreeLine: true,
+          leading: const CircleAvatar(
+            child: Icon(Icons.person),
+          ),
+          title: Text(vendor.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(vendor.email, maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                _StatusBadge(status: vendor.status),
+              ],
+            ),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue, size: 20), 
+                onPressed: onEdit,
+                constraints: const BoxConstraints(),
+                padding: const EdgeInsets.all(8),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red, size: 20), 
+                onPressed: onDelete,
+                constraints: const BoxConstraints(),
+                padding: const EdgeInsets.all(8),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -19,7 +19,15 @@ class CustomerOrderService {
       // Ensure the customerId matches the current user
       final orderWithUser = order.copyWith(customerId: _userId);
       
-      await _orderCollection.doc(orderWithUser.id).set(orderWithUser.toMap());
+      final docRef = orderWithUser.id.isEmpty 
+          ? _orderCollection.doc() 
+          : _orderCollection.doc(orderWithUser.id);
+      
+      final finalOrder = orderWithUser.id.isEmpty 
+          ? orderWithUser.copyWith(id: docRef.id) 
+          : orderWithUser;
+
+      await docRef.set(finalOrder.toMap());
       
       // Optionally clear cart after placing order
       // This could be handled by a CartService instance if needed

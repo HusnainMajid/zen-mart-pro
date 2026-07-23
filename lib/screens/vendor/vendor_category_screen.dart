@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_category_provider.dart';
+import '../../providers/vendor_dashboard_provider.dart';
 import '../../models/category_model.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../shared/widgets/error_widget.dart';
@@ -22,13 +23,23 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCategories());
+    _loadCategories();
   }
 
   void _loadCategories() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = context.read<AuthProvider>().currentUser;
+      if (user != null && user.shopId != null) {
+        context.read<VendorCategoryProvider>().fetchShopCategories(user.shopId!);
+      }
+    });
+  }
+
+  void _refreshDashboard() {
     final user = context.read<AuthProvider>().currentUser;
     if (user != null && user.shopId != null) {
-      context.read<VendorCategoryProvider>().fetchShopCategories(user.shopId!);
+      context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
     }
   }
 
@@ -112,7 +123,7 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
     final isEditing = category != null;
     final nameController = TextEditingController(text: category?.name ?? '');
     final descController = TextEditingController(text: category?.description ?? '');
-    bool isSaving = false;
+    bool isSavingState = false;
 
     await showDialog(
       context: context,
@@ -141,17 +152,17 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: isSaving ? null : () => Navigator.pop(context),
+              onPressed: isSavingState ? null : () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: isSaving ? null : () async {
+              onPressed: isSavingState ? null : () async {
                 if (nameController.text.isEmpty) {
                   SnackBarHelper.showError(context, 'Name is required');
                   return;
                 }
                 
-                setDialogState(() => isSaving = true);
+                setDialogState(() => isSavingState = true);
                 try {
                   final provider = context.read<VendorCategoryProvider>();
                   final auth = context.read<AuthProvider>();
@@ -174,21 +185,19 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
 
                   if (!mounted) return;
                   if (success) {
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context);
-                    // ignore: use_build_context_synchronously
-                    SnackBarHelper.showSuccess(context, 'Category ${isEditing ? 'updated' : 'added'} successfully');
+                    if (context.mounted) Navigator.pop(context);
+                    if (context.mounted) SnackBarHelper.showSuccess(context, 'Category ${isEditing ? 'updated' : 'added'} successfully');
+                    _refreshDashboard();
                   } else {
-                    // ignore: use_build_context_synchronously
-                    SnackBarHelper.showError(context, provider.errorMessage ?? 'Operation failed');
+                    if (context.mounted) SnackBarHelper.showError(context, provider.errorMessage ?? 'Operation failed');
                   }
                 } catch (e) {
-                  if (context.mounted) SnackBarHelper.showError(context, e.toString());
+                  if (mounted && context.mounted) SnackBarHelper.showError(context, e.toString());
                 } finally {
-                  setDialogState(() => isSaving = false);
+                  if (mounted) setDialogState(() => isSavingState = false);
                 }
               },
-              child: isSaving 
+              child: isSavingState 
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                 : Text(isEditing ? 'Update' : 'Add'),
             ),
@@ -199,10 +208,7 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
   }
 
   Future<void> _confirmDelete(CategoryModel category) async {
-    final auth = context.read<AuthProvider>();
-    final provider = context.read<VendorCategoryProvider>();
-    
-    final confirmed = await showDialog<bool>(
+    final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Category'),
@@ -218,13 +224,14 @@ class _VendorCategoryScreenState extends State<VendorCategoryScreen> {
       ),
     );
 
-    if (confirmed == true && context.mounted) {
-      final user = auth.currentUser!;
-      final success = await provider.deleteCategory(category.id, user.shopId!);
-      if (success && context.mounted) {
-        SnackBarHelper.showSuccess(context, 'Category deleted successfully');
-      } else if (context.mounted) {
-        SnackBarHelper.showError(context, provider.errorMessage ?? 'Failed to delete category');
+    if (confirmed == true && mounted) {
+      final user = context.read<AuthProvider>().currentUser!;
+      final success = await context.read<VendorCategoryProvider>().deleteCategory(category.id, user.shopId!);
+      if (success && mounted) {
+        if (context.mounted) SnackBarHelper.showSuccess(context, 'Category deleted successfully');
+        _refreshDashboard();
+      } else if (mounted) {
+        if (context.mounted) SnackBarHelper.showError(context, context.read<VendorCategoryProvider>().errorMessage ?? 'Failed to delete category');
       }
     }
   }

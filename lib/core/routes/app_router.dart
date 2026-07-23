@@ -31,6 +31,8 @@ import '../../screens/customer/wishlist_screen.dart';
 import '../../screens/customer/notification_screen.dart';
 import '../../screens/customer/product_details_screen.dart';
 import '../../screens/customer/shop_details_screen.dart';
+import '../../screens/customer/search_screen.dart';
+import '../../screens/customer/edit_profile_screen.dart';
 import '../../screens/rider/rider_dashboard.dart';
 import '../../screens/admin/all_shops_screen.dart';
 import '../../screens/admin/all_products_screen.dart';
@@ -240,6 +242,17 @@ class AppRouter {
       GoRoute(
         path: Routes.notifications,
         builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: Routes.search,
+        builder: (context, state) {
+          final query = state.extra as String?;
+          return SearchScreen(initialQuery: query);
+        },
+      ),
+      GoRoute(
+        path: Routes.editProfile,
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: Routes.riderDashboard,

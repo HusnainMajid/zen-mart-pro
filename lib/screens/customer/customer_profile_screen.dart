@@ -50,6 +50,11 @@ class CustomerProfileScreen extends StatelessWidget {
               user.email,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
             ),
+             if (user.phoneNumber.isNotEmpty) 
+              Text(
+                user.phoneNumber,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
             const SizedBox(height: 30),
 
             // Profile Options
@@ -57,18 +62,19 @@ class CustomerProfileScreen extends StatelessWidget {
               context,
               icon: Icons.person_outline,
               title: 'Edit Profile',
-              onTap: () {
-                // TODO: Implement Edit Profile
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edit Profile coming soon')),
-                );
-              },
+              onTap: () => context.push(Routes.editProfile),
             ),
             _buildOptionTile(
               context,
               icon: Icons.location_on_outlined,
               title: 'Saved Addresses',
               onTap: () => context.push(Routes.addresses),
+            ),
+            _buildOptionTile(
+              context,
+              icon: Icons.history,
+              title: 'Order History',
+              onTap: () => context.push(Routes.orderHistory),
             ),
             _buildOptionTile(
               context,
@@ -87,7 +93,6 @@ class CustomerProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                // TODO: Implement Help & Support
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Help & Support coming soon')),
                 );

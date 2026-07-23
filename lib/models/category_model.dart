@@ -5,6 +5,8 @@ class CategoryModel {
   final String name;
   final String description;
   final String? shopId;
+  final int displayOrder;
+  final String status; // 'active', 'inactive'
   final DateTime createdAt;
 
   CategoryModel({
@@ -12,6 +14,8 @@ class CategoryModel {
     required this.name,
     required this.description,
     this.shopId,
+    this.displayOrder = 0,
+    this.status = 'active',
     required this.createdAt,
   });
 
@@ -21,6 +25,8 @@ class CategoryModel {
       'name': name,
       'description': description,
       'shopId': shopId,
+      'displayOrder': displayOrder,
+      'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -31,6 +37,8 @@ class CategoryModel {
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       shopId: map['shopId'],
+      displayOrder: (map['displayOrder'] ?? 0).toInt(),
+      status: map['status'] ?? 'active',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
   }
@@ -40,6 +48,8 @@ class CategoryModel {
     String? name,
     String? description,
     String? shopId,
+    int? displayOrder,
+    String? status,
     DateTime? createdAt,
   }) {
     return CategoryModel(
@@ -47,6 +57,8 @@ class CategoryModel {
       name: name ?? this.name,
       description: description ?? this.description,
       shopId: shopId ?? this.shopId,
+      displayOrder: displayOrder ?? this.displayOrder,
+      status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
     );
   }

@@ -19,8 +19,11 @@ class Routes {
   static const String checkout = '/checkout';
   static const String orderTracking = '/order-tracking';
   static const String addresses = '/addresses';
+  static const String orderHistory = '/order-history';
   static const String wishlist = '/wishlist';
   static const String notifications = '/notifications';
+  static const String search = '/search';
+  static const String editProfile = '/edit-profile';
 
   // Admin Management Routes
   static const String vendors = '/vendors';

@@ -16,10 +16,13 @@ class OrderTrackingScreen extends StatefulWidget {
 
 class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   @override
-  void dispose() {
-    // Avoid disposing if we want to keep tracking in background, but task implies screen-based tracking
-    // Provider.of<CustomerOrderProvider>(context, listen: false).stopTracking();
-    super.dispose();
+  void initState() {
+    super.initState();
+    if (widget.order != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<CustomerOrderProvider>().startTracking(widget.order!.id);
+      });
+    }
   }
 
   @override
@@ -128,15 +131,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   Widget _buildVerticalTimeline(BuildContext context, String currentStatus) {
     final steps = [
       {'status': 'pending', 'title': 'Order Placed', 'subtitle': 'Your order has been received'},
-      {'status': 'confirmed', 'title': 'Confirmed', 'subtitle': 'Vendor has accepted your order'},
-      {'status': 'processing', 'title': 'Processing', 'subtitle': 'Your items are being prepared'},
-      {'status': 'out_for_delivery', 'title': 'On the Way', 'subtitle': 'Rider is heading to your location'},
+      {'status': 'confirmed', 'title': 'Accepted', 'subtitle': 'Vendor has accepted your order'},
+      {'status': 'preparing', 'title': 'Preparing', 'subtitle': 'Your items are being prepared'},
+      {'status': 'ready_for_pickup', 'title': 'Ready for Pickup', 'subtitle': 'Your order is ready to be collected'},
+      {'status': 'picked_up', 'title': 'Picked Up', 'subtitle': 'Rider has picked up your order'},
+      {'status': 'out_for_delivery', 'title': 'Out for Delivery', 'subtitle': 'Rider is heading to your location'},
       {'status': 'delivered', 'title': 'Delivered', 'subtitle': 'Enjoy your purchase!'},
     ];
 
+    // Find current index
     int currentIdx = steps.indexWhere((s) => s['status'] == currentStatus.toLowerCase());
+    
+    // Fallback for status names that might vary slightly or legacy names
     if (currentIdx == -1) {
-      if (currentStatus.toLowerCase() == 'shipped') currentIdx = 3;
+      if (currentStatus.toLowerCase() == 'accepted') currentIdx = 1;
+      if (currentStatus.toLowerCase() == 'processing') currentIdx = 2;
+      if (currentStatus.toLowerCase() == 'shipped') currentIdx = 5;
     }
 
     return Column(

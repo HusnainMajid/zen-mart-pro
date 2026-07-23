@@ -239,7 +239,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
       crossAxisCount: isTablet ? 4 : 2,
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
-      childAspectRatio: 1.4,
+      childAspectRatio: 1.5,
       children: [
         _buildStatCard(
           'Total Products', 
@@ -274,49 +274,50 @@ class _VendorDashboardState extends State<VendorDashboard> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color, {VoidCallback? onTap}) {
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      color: color.withAlpha(25),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: color.withAlpha(51)),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 24),
-              const Spacer(),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color.withAlpha(204),
-                  ),
-                ),
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
               ),
-              Flexible(
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey[700],
-                  ),
-                ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const Spacer(),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
+            ),
+          ],
         ),
       ),
     );

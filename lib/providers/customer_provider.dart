@@ -45,6 +45,24 @@ class CustomerProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateProfile(UserModel user) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      await _customerService.updateProfile(user);
+      final index = _customers.indexWhere((c) => c.uid == user.uid);
+      if (index != -1) {
+        _customers[index] = user;
+      }
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

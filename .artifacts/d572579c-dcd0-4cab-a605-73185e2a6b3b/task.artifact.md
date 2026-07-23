@@ -1,27 +1,5 @@
-- [ ] Final Error Resolution & Simplification
-    - [/] Models: Remove remaining image fields in `copyWith` and constructors.
-        - [x] `rider_model.dart`
-        - [x] `vendor_model.dart`
-        - [x] `shop_model.dart`
-        - [x] `cart_item_model.dart`
-        - [x] `wishlist_model.dart`
-        - [x] `order_item_model.dart`
-    - [ ] Services: Clean up unused `profileImage` parameters.
-        - [ ] `rider_service.dart`
-        - [ ] `vendor_service.dart`
-    - [ ] Providers: Sync with updated services and models.
-        - [ ] `rider_provider.dart`
-        - [ ] `vendor_provider.dart`
-        - [ ] `wishlist_provider.dart`
-        - [ ] `vendor_dashboard_provider.dart`
-    - [ ] Screens: Replace remaining image logic with Icons and fix constructor calls.
-        - [ ] `shops_screen.dart`
-        - [ ] `vendors_screen.dart`
-        - [ ] `checkout_screen.dart`
-        - [ ] `order_history_screen.dart`
-        - [ ] `cart_screen.dart`
-        - [ ] `wishlist_screen.dart`
-        - [ ] `add_edit_product_screen.dart`
-        - [ ] `vendor_dashboard.dart`
-        - [ ] `vendor_product_list_screen.dart`
-    - [ ] Final Cleanup: Remove all `cached_network_image` and `image_picker` imports.
+- [ ] Fix Search text visibility in `search_screen.dart`
+- [ ] Add `getAllVendorCategories` to `VendorCategoryService`
+- [ ] Add `fetchAllVendorCategories` to `VendorCategoryProvider`
+- [ ] Update `CustomerHome` to use all vendor categories
+- [ ] Verify categories appear on dashboard

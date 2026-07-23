@@ -1,5 +1,6 @@
 class AddressModel {
   final String id;
+  final String userId;
   final String title;
   final String street;
   final String city;
@@ -10,6 +11,7 @@ class AddressModel {
 
   AddressModel({
     required this.id,
+    required this.userId,
     required this.title,
     required this.street,
     required this.city,
@@ -22,6 +24,7 @@ class AddressModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'userId': userId,
       'title': title,
       'street': street,
       'city': city,
@@ -35,6 +38,7 @@ class AddressModel {
   factory AddressModel.fromMap(Map<String, dynamic> map) {
     return AddressModel(
       id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
       title: map['title'] ?? '',
       street: map['street'] ?? '',
       city: map['city'] ?? '',
@@ -47,6 +51,7 @@ class AddressModel {
 
   AddressModel copyWith({
     String? id,
+    String? userId,
     String? title,
     String? street,
     String? city,
@@ -57,6 +62,7 @@ class AddressModel {
   }) {
     return AddressModel(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       title: title ?? this.title,
       street: street ?? this.street,
       city: city ?? this.city,

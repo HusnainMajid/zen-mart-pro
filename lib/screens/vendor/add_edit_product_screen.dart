@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_product_provider.dart';
 import '../../providers/vendor_category_provider.dart';
+import '../../providers/vendor_dashboard_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../models/product_model.dart';
 import '../../models/category_model.dart';
@@ -140,6 +141,10 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
 
     if (success && mounted) {
       SnackBarHelper.showSuccess(context, 'Product ${_isEditing ? 'updated' : 'added'} successfully');
+      
+      // Refresh Dashboard
+      context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
+      
       Navigator.pop(context);
     } else if (mounted) {
       SnackBarHelper.showError(context, context.read<VendorProductProvider>().errorMessage ?? 'Failed to save product');

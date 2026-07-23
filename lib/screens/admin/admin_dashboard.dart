@@ -70,7 +70,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    childAspectRatio: 1.3,
                     children: [
                       Consumer<VendorProvider>(
                         builder: (context, p, _) => _SummaryCard(
@@ -220,18 +220,29 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 0,
+      color: color.withAlpha(20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: color.withAlpha(50)),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 28, color: color),
-              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withAlpha(30),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 24, color: color),
+              ),
+              const SizedBox(height: 12),
               if (isLoading)
                 const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
               else
@@ -239,22 +250,22 @@ class _SummaryCard extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     count,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: count == 'View' ? 18 : null,
+                          color: color,
                         ),
                   ),
                 ),
-              const SizedBox(height: 2),
-              Flexible(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 10,
-                      ),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

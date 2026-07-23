@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../../core/routes/routes.dart';
 import '../../models/product_model.dart';
 import '../../models/cart_item_model.dart';
 import '../../models/wishlist_model.dart';
@@ -59,6 +61,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     color: isInWishlist ? Colors.red : Colors.black,
                   ),
                   onPressed: () => _toggleWishlist(wishlistProvider),
+                ),
+              ),
+              CircleAvatar(
+                backgroundColor: Colors.white,
+                child: IconButton(
+                  icon: Consumer<CartProvider>(
+                    builder: (context, cart, _) => Badge.count(
+                      count: cart.items.length,
+                      isLabelVisible: cart.items.isNotEmpty,
+                      child: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+                    ),
+                  ),
+                  onPressed: () => context.push(Routes.cart),
                 ),
               ),
               const SizedBox(width: 16),

@@ -37,6 +37,7 @@ class VendorProductProvider with ChangeNotifier {
       _applyFilters();
       _errorMessage = null;
     } catch (e) {
+      debugPrint('Provider error fetching products: $e');
       _errorMessage = e.toString();
     } finally {
       _setLoading(false);
@@ -98,24 +99,19 @@ class VendorProductProvider with ChangeNotifier {
   /// Adds a new product.
   Future<bool> addProduct(ProductModel product) async {
     _setLoading(true);
-    debugPrint('Starting addProduct for: ${product.name}');
     try {
-      debugPrint('Creating product model');
       final newProduct = product.copyWith(
         id: const Uuid().v4(),
         createdAt: DateTime.now(),
       );
 
-      debugPrint('Saving product to Firestore: ${newProduct.id}');
       await _productService.addProduct(newProduct);
-      
-      debugPrint('Refreshing shop products list');
       await fetchShopProducts(product.shopId);
       
       _errorMessage = null;
       return true;
     } catch (e) {
-      debugPrint('CRITICAL ERROR in addProduct: $e');
+      debugPrint('Provider error adding product: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -129,8 +125,10 @@ class VendorProductProvider with ChangeNotifier {
     try {
       await _productService.updateProduct(product);
       await fetchShopProducts(product.shopId);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error updating product: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -144,8 +142,10 @@ class VendorProductProvider with ChangeNotifier {
     try {
       await _productService.deleteProduct(product.id);
       await fetchShopProducts(product.shopId);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error deleting product: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -165,8 +165,10 @@ class VendorProductProvider with ChangeNotifier {
       );
       await _productService.addProduct(duplicatedProduct);
       await fetchShopProducts(product.shopId);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error duplicating product: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -178,11 +180,14 @@ class VendorProductProvider with ChangeNotifier {
   Future<bool> archiveProduct(ProductModel product) async {
     _setLoading(true);
     try {
-      // Note: ProductModel currently doesn't have status or isAvailable fields.
-      await _productService.updateProduct(product);
+      // Logic for archiving (setting stock to 0 or similar)
+      final archivedProduct = product.copyWith(stock: 0);
+      await _productService.updateProduct(archivedProduct);
       await fetchShopProducts(product.shopId);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error archiving product: $e');
       _errorMessage = e.toString();
       return false;
     } finally {

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/category_model.dart';
 import '../services/category_service.dart';
+import '../services/vendor_category_service.dart';
 
 class CategoryProvider with ChangeNotifier {
   final CategoryService _categoryService = CategoryService();
+  final VendorCategoryService _vendorCategoryService = VendorCategoryService();
 
   List<CategoryModel> _categories = [];
   List<CategoryModel> _filteredCategories = [];
@@ -15,11 +17,25 @@ class CategoryProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// Fetches all categories.
+  /// Fetches all categories (Global + Vendor).
   Future<void> fetchCategories() async {
     _setLoading(true);
     try {
-      _categories = await _categoryService.getAllCategories();
+      final globalCategories = await _categoryService.getAllCategories();
+      final vendorCategories = await _vendorCategoryService.getAllVendorCategories();
+      
+      // Combine and remove duplicates by name
+      final Map<String, CategoryModel> combined = {};
+      for (var cat in globalCategories) {
+        combined[cat.name.toLowerCase()] = cat;
+      }
+      for (var cat in vendorCategories) {
+        combined[cat.name.toLowerCase()] = cat;
+      }
+      
+      _categories = combined.values.toList();
+      _categories.sort((a, b) => a.name.compareTo(b.name));
+      
       _filteredCategories = List.from(_categories);
       _errorMessage = null;
     } catch (e) {

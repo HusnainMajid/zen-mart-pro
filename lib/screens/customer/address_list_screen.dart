@@ -149,13 +149,14 @@ class AddressListScreen extends StatelessWidget {
                   onPressed: () {
                     final provider = context.read<AddressProvider>();
                     final newAddress = AddressModel(
-                      id: address?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: titleController.text,
-                      street: streetController.text,
-                      city: cityController.text,
-                      state: stateController.text,
-                      zipCode: zipController.text,
-                      country: countryController.text,
+                      id: address?.id ?? '',
+                      userId: '', // Service will populate this
+                      title: titleController.text.trim(),
+                      street: streetController.text.trim(),
+                      city: cityController.text.trim(),
+                      state: stateController.text.trim(),
+                      zipCode: zipController.text.trim(),
+                      country: countryController.text.trim(),
                       isDefault: isDefault,
                     );
                     

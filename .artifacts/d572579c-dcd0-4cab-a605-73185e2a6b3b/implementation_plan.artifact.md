@@ -1,46 +1,45 @@
-# Implementation Plan - Final Project Cleanup and Error Resolution
+# Implementation Plan - Project-wide UI Overflow Fixes
 
-This plan addresses the remaining compilation errors and lint warnings project-wide to ensure the application builds and runs smoothly.
+This plan addresses the "Bottom Overflowed" issues in various card components across the project by ensuring responsive layouts and flexible text handling.
 
 ## Proposed Changes
 
-### 1. Fix Broken Syntax and Misplaced Labels
+### Admin Module
 
-#### [MODIFY] [shops_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/shops_screen.dart)
-- Already applied a fix to the `try` block where `shopData` instantiation was malformed, resolving 100+ cascading errors.
+#### [MODIFY] [admin_dashboard.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/admin_dashboard.dart)
+- Increase `childAspectRatio` from `1.1` to `1.2` or `1.3` to provide more vertical space for summary cards.
+- Use `FittedBox` for the count text to prevent it from pushing boundaries.
 
-### 2. Address Deprecated Member Usages
+#### [MODIFY] [customers_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/customers_screen.dart)
+- Refine `_CustomerCard`'s `trailing` widget. Use a more compact layout or ensure it doesn't exceed `ListTile` height.
+- Reduce vertical padding if necessary.
 
-#### [MODIFY] [riders_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/riders_screen.dart)
-- Change `value` to `initialValue` in `DropdownButtonFormField`.
+#### [MODIFY] [vendors_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/vendors_screen.dart) and [riders_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/riders_screen.dart)
+- Apply similar fixes as `customers_screen.dart` to `_VendorCard` and `_RiderCard`.
 
-#### [MODIFY] [vendors_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/admin/vendors_screen.dart)
-- Change `value` to `initialValue` in `DropdownButtonFormField`.
+### Rider Module
 
-#### [MODIFY] [add_edit_product_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/vendor/add_edit_product_screen.dart)
-- Change `value` to `initialValue` in `DropdownButtonFormField`.
+#### [MODIFY] [rider_dashboard.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/rider/rider_dashboard.dart)
+- Increase `childAspectRatio` in `_buildStatsGrid` from `1.1` to `1.3`.
+- Use `FittedBox` for stat values.
 
-#### [MODIFY] [vendor_product_list_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/vendor/vendor_product_list_screen.dart)
-- Change `value` to `initialValue` in `DropdownButtonFormField`.
-
-### 3. Resolve Asynchronous Context Usage (Lint Warnings)
-
-#### [MODIFY] [vendor_category_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/vendor/vendor_category_screen.dart)
-- Add `if (!context.mounted) return;` before using `Navigator` or `SnackBarHelper` after `await` calls.
+### Vendor Module
 
 #### [MODIFY] [vendor_dashboard.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/vendor/vendor_dashboard.dart)
-- Add `if (!mounted) return;` before using `context` in asynchronous methods.
+- Increase `childAspectRatio` in `_buildStatsGrid` from `1.4` to `1.5` (if needed, 1.4 is generally okay but higher is safer).
+- Ensure `_buildStatCard` handles long titles gracefully.
 
-### 4. Address RadioListTile Deprecations
+### Customer Module
 
-#### [MODIFY] [checkout_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/customer/checkout_screen.dart)
-- Update `RadioListTile` usage to adhere to the latest Flutter standards if necessary, or ensure the current usage is safely suppressed if it's a false positive on `groupValue`. (Actually, I'll update it to the recommended pattern).
+#### [MODIFY] [customer_home.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/customer/customer_home.dart)
+- In `_buildProductCard`, ensure the `Column` doesn't overflow the fixed `SizedBox` height (`220`).
+- Use `Flexible` or `Expanded` widgets where appropriate.
+
+#### [MODIFY] [wishlist_screen.dart](file:///C:/Users/Husnain/Desktop/zen_mart_pro/lib/screens/customer/wishlist_screen.dart)
+- Increase `childAspectRatio` from `0.7` to `0.75` or `0.8` to accommodate the "Add to Cart" button and text.
 
 ## Verification Plan
 
-### Automated Verification
-- Run `flutter analyze` to ensure 0 issues found.
-
 ### Manual Verification
-- Build and run the app to confirm it launches without errors.
-- Navigate to the affected screens (Shops, Vendors, Riders, Dashboard) to ensure UI functionality is intact.
+- Test on small screen devices (emulated) to ensure the red overflow banners are gone.
+- Verify that text is still legible and not overly squashed by `FittedBox`.

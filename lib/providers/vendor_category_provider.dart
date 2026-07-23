@@ -21,6 +21,7 @@ class VendorCategoryProvider with ChangeNotifier {
       _categories = await _categoryService.getShopCategories(shopId);
       _errorMessage = null;
     } catch (e) {
+      debugPrint('Provider error fetching categories: $e');
       _errorMessage = e.toString();
     } finally {
       _setLoading(false);
@@ -40,13 +41,17 @@ class VendorCategoryProvider with ChangeNotifier {
 
       final newCategory = category.copyWith(
         id: const Uuid().v4(),
+        displayOrder: _categories.length,
+        status: 'active',
         createdAt: DateTime.now(),
       );
 
       await _categoryService.addCategory(newCategory);
       await fetchShopCategories(category.shopId!);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error adding category: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -60,8 +65,10 @@ class VendorCategoryProvider with ChangeNotifier {
     try {
       await _categoryService.updateCategory(category);
       await fetchShopCategories(category.shopId!);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error updating category: $e');
       _errorMessage = e.toString();
       return false;
     } finally {
@@ -75,8 +82,10 @@ class VendorCategoryProvider with ChangeNotifier {
     try {
       await _categoryService.deleteCategory(categoryId);
       await fetchShopCategories(shopId);
+      _errorMessage = null;
       return true;
     } catch (e) {
+      debugPrint('Provider error deleting category: $e');
       _errorMessage = e.toString();
       return false;
     } finally {

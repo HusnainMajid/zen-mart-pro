@@ -29,11 +29,29 @@ class VendorCategoryService {
     }
   }
 
+  /// Fetches all categories across all shops
+  Future<List<CategoryModel>> getAllVendorCategories() async {
+    try {
+      final QuerySnapshot snapshot = await _firestore
+          .collection(_collection)
+          .orderBy('name', descending: false)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => CategoryModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('Error fetching all categories: $e');
+      throw 'Failed to fetch categories: ${e.toString()}';
+    }
+  }
+
   /// Adds a new category for the vendor
   Future<void> addCategory(CategoryModel category) async {
     try {
       await _firestore.collection(_collection).doc(category.id).set(category.toMap());
     } catch (e) {
+      debugPrint('Error adding category: $e');
       throw 'Failed to add category: ${e.toString()}';
     }
   }
@@ -43,6 +61,7 @@ class VendorCategoryService {
     try {
       await _firestore.collection(_collection).doc(category.id).update(category.toMap());
     } catch (e) {
+      debugPrint('Error updating category: $e');
       throw 'Failed to update category: ${e.toString()}';
     }
   }
@@ -52,6 +71,7 @@ class VendorCategoryService {
     try {
       await _firestore.collection(_collection).doc(categoryId).delete();
     } catch (e) {
+      debugPrint('Error deleting category: $e');
       throw 'Failed to delete category: ${e.toString()}';
     }
   }
@@ -68,6 +88,7 @@ class VendorCategoryService {
 
       return snapshot.docs.isNotEmpty;
     } catch (e) {
+      debugPrint('Error checking duplicate category: $e');
       throw 'Failed to check category name availability: ${e.toString()}';
     }
   }

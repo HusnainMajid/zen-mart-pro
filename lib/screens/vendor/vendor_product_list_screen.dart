@@ -5,6 +5,7 @@ import '../../core/routes/routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/vendor_product_provider.dart';
 import '../../providers/vendor_category_provider.dart';
+import '../../providers/vendor_dashboard_provider.dart';
 import '../../models/product_model.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../shared/widgets/error_widget.dart';
@@ -38,6 +39,13 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
         context.read<VendorCategoryProvider>().fetchShopCategories(user.shopId!);
       }
     });
+  }
+
+  void _refreshDashboard() {
+    final user = context.read<AuthProvider>().currentUser;
+    if (user != null && user.shopId != null) {
+      context.read<VendorDashboardProvider>().fetchDashboardData(user.uid, user.shopId!);
+    }
   }
 
   @override
@@ -120,7 +128,11 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
         final product = provider.products[index];
         return _ProductListItem(
           product: product,
-          onEdit: () => context.push(Routes.editProduct, extra: product),
+          onEdit: () async {
+             await context.push(Routes.editProduct, extra: product);
+             _loadData();
+             _refreshDashboard();
+          },
           onDelete: () => _confirmDelete(product),
           onDuplicate: () => _handleDuplicate(product),
         );
@@ -137,12 +149,12 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
   }
 
   Future<void> _confirmDelete(ProductModel product) async {
-    final confirmed = await showDialog<bool>(
+    final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => ConfirmationDialog(
         title: 'Delete Product',
         content: 'Are you sure you want to delete "${product.name}"? This action cannot be undone.',
-        onConfirm: () {}, 
+        onConfirm: () {}, // Handled by dialog pop result
       ),
     );
 
@@ -150,6 +162,7 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
       final success = await context.read<VendorProductProvider>().deleteProduct(product);
       if (success && mounted) {
         SnackBarHelper.showSuccess(context, 'Product deleted successfully');
+        _refreshDashboard();
       } else if (mounted) {
         SnackBarHelper.showError(context, context.read<VendorProductProvider>().errorMessage ?? 'Delete failed');
       }
@@ -160,6 +173,7 @@ class _VendorProductListScreenState extends State<VendorProductListScreen> {
     final success = await context.read<VendorProductProvider>().duplicateProduct(product);
     if (success && mounted) {
       SnackBarHelper.showSuccess(context, 'Product duplicated successfully');
+      _refreshDashboard();
     } else if (mounted) {
       SnackBarHelper.showError(context, context.read<VendorProductProvider>().errorMessage ?? 'Duplicate failed');
     }

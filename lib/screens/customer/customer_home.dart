@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/shop_provider.dart';
 import '../../providers/admin_product_provider.dart';
+import '../../providers/cart_provider.dart';
 import '../../core/routes/routes.dart';
 import '../../models/product_model.dart';
 import '../../models/shop_model.dart';
@@ -31,7 +33,28 @@ class _CustomerHomeState extends State<CustomerHome> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().currentUser;
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Welcome, ${user?.fullName ?? 'Guest'}!',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => context.push(Routes.cart),
+            icon: Consumer<CartProvider>(
+              builder: (context, cart, _) => Badge.count(
+                count: cart.items.length,
+                isLabelVisible: cart.items.isNotEmpty,
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -43,16 +66,15 @@ class _CustomerHomeState extends State<CustomerHome> {
           },
           child: CustomScrollView(
             slivers: [
-              // Search Bar at Top
+              // Search Bar
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SearchBar(
                     hintText: 'Search products, shops...',
                     leading: const Icon(Icons.search),
-                    onTap: () {
-                      // Navigate to search screen or handle search
-                    },
+                    onTap: () => context.push(Routes.search),
+                    readOnly: true,
                   ),
                 ),
               ),
@@ -112,9 +134,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           TextButton(
-                            onPressed: () {
-                              // Navigate to all shops
-                            },
+                            onPressed: () => context.push(Routes.allShops),
                             child: const Text('See All'),
                           ),
                         ],
@@ -126,7 +146,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                         return Skeletonizer(
                           enabled: shopProvider.isLoading,
                           child: SizedBox(
-                            height: 160,
+                            height: 170,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -146,10 +166,22 @@ class _CustomerHomeState extends State<CustomerHome> {
 
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-              // Popular Products
+              // Recommended Products (Featured)
               _buildProductSection(
-                title: 'Popular Products',
-                filter: (products) => products.take(10).toList(),
+                title: 'Recommended for You',
+                filter: (products) => products.where((p) => p.minStockAlert > 0).toList(), // Using minStockAlert as placeholder for featured logic if no isFeatured flag
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+              // Recent Products
+              _buildProductSection(
+                title: 'Recent Products',
+                filter: (products) {
+                  final sorted = List<ProductModel>.from(products);
+                  sorted.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                  return sorted.take(10).toList();
+                },
               ),
 
               const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -161,21 +193,28 @@ class _CustomerHomeState extends State<CustomerHome> {
   }
 
   Widget _buildCategoryItem(CategoryModel? category) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.blue.withAlpha(25),
-            child: const Icon(Icons.category, color: Colors.blue),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            category?.name ?? 'Category',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        if (category != null) {
+          context.push(Routes.search, extra: category.name);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.blue.withAlpha(25),
+              child: const Icon(Icons.category, color: Colors.blue),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              category?.name ?? 'Category',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -203,25 +242,35 @@ class _CustomerHomeState extends State<CustomerHome> {
                   child: const Icon(Icons.store, size: 48, color: Colors.grey),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      shop?.name ?? 'Shop Name',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 14),
-                        SizedBox(width: 4),
-                        Text('4.5', style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        shop?.name ?? 'Shop Name',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, color: Colors.grey, size: 12),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              shop?.address ?? '', 
+                              style: const TextStyle(fontSize: 11), 
+                              maxLines: 1, 
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -249,7 +298,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => context.push(Routes.search),
                   child: const Text('See All'),
                 ),
               ],
@@ -262,7 +311,7 @@ class _CustomerHomeState extends State<CustomerHome> {
               return Skeletonizer(
                 enabled: productProvider.isLoading,
                 child: SizedBox(
-                  height: 220,
+                  height: 230,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -324,50 +373,56 @@ class _CustomerHomeState extends State<CustomerHome> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product?.name ?? 'Product Name',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      product?.shopName ?? 'Shop Name',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          CurrencyFormatter.format(product?.discountPrice ?? product?.price ?? 0),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        if (product?.discountPrice != null) ...[
-                          const SizedBox(width: 4),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            CurrencyFormatter.format(product!.price),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              decoration: TextDecoration.lineThrough,
-                              color: Colors.grey,
-                            ),
+                            product?.name ?? 'Product Name',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            product?.shopName ?? 'Shop Name',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                          ),
+                          const Spacer(),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  CurrencyFormatter.format(product?.discountPrice ?? product?.price ?? 0),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              if (product?.discountPrice != null) ...[
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    CurrencyFormatter.format(product!.price),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),

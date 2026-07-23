@@ -133,35 +133,45 @@ class _CustomerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.person),
-        ),
-        title: Text(customer.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(customer.email),
-            Text(customer.phoneNumber, style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Switch.adaptive(
-              value: customer.isActive,
-              onChanged: onToggleStatus,
-              activeTrackColor: Colors.green,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: ListTile(
+          isThreeLine: true,
+          leading: const CircleAvatar(
+            child: Icon(Icons.person),
+          ),
+          title: Text(customer.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(customer.email, maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(customer.phoneNumber, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
             ),
-            Text(
-              customer.isActive ? 'Active' : 'Inactive',
-              style: TextStyle(
-                fontSize: 10,
-                color: customer.isActive ? Colors.green : Colors.red,
-                fontWeight: FontWeight.bold,
+          ),
+          trailing: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch.adaptive(
+                value: customer.isActive,
+                onChanged: onToggleStatus,
+                activeTrackColor: Colors.green,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-            ),
-          ],
+              Text(
+                customer.isActive ? 'Active' : 'Inactive',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: customer.isActive ? Colors.green : Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

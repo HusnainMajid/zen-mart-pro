@@ -5,11 +5,13 @@ import '../../providers/cart_provider.dart';
 import '../../providers/address_provider.dart';
 import '../../providers/customer_order_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/shop_provider.dart';
 import '../../models/order_model.dart';
 import '../../models/order_item_model.dart';
 import '../../core/routes/routes.dart';
 import '../../shared/widgets/loading_widget.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/custom_text_field.dart';
 import '../../utils/currency_formatter.dart';
 import '../../utils/snackbar_helper.dart';
 
@@ -24,6 +26,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int _currentStep = 0;
   final String _selectedPaymentMethod = 'Cash on Delivery';
   String? _selectedAddressId;
+  final _orderNotesController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +34,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final addressProvider = Provider.of<AddressProvider>(context);
     final orderProvider = Provider.of<CustomerOrderProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final shopProvider = Provider.of<ShopProvider>(context);
 
     if (cartProvider.items.isEmpty) {
       return Scaffold(
@@ -70,7 +74,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             }
             setState(() => _currentStep += 1);
           } else {
-            _placeOrder(context, cartProvider, addressProvider, orderProvider, authProvider);
+            _placeOrder(context, cartProvider, addressProvider, orderProvider, authProvider, shopProvider);
           }
         },
         onStepCancel: () {
@@ -82,7 +86,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         },
         controlsBuilder: (context, controls) {
           return Padding(
-            padding: const EdgeInsets.only(top: 24),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Expanded(
@@ -114,7 +118,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             title: const Text('Address'),
             isActive: _currentStep >= 0,
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-            content: _buildAddressSelection(addressProvider),
+            content: _buildAddressSelection(addressProvider, authProvider),
           ),
           Step(
             title: const Text('Payment'),
@@ -133,37 +137,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildAddressSelection(AddressProvider addressProvider) {
+  Widget _buildAddressSelection(AddressProvider addressProvider, AuthProvider authProvider) {
     if (addressProvider.isLoading) return const LoadingWidget();
-    if (addressProvider.addresses.isEmpty) {
-      return Column(
-        children: [
+    final user = authProvider.currentUser;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (user != null) ...[
+          Text('Ordering as: ${user.fullName}', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text('Phone: ${user.phoneNumber}', style: const TextStyle(color: Colors.grey)),
+          const SizedBox(height: 16),
+        ],
+        if (addressProvider.addresses.isEmpty) ...[
           const Text('No saved addresses found.'),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => context.push(Routes.addresses),
             child: const Text('Add New Address'),
           ),
+        ] else ...[
+          const Text('Select Delivery Address:', style: TextStyle(fontWeight: FontWeight.w500)),
+          const SizedBox(height: 8),
+          ...addressProvider.addresses.map((address) {
+            // ignore: deprecated_member_use
+            return RadioListTile<String>(
+              title: Text(address.title),
+              subtitle: Text('${address.street}, ${address.city}'),
+              value: address.id,
+              // ignore: deprecated_member_use
+              groupValue: _selectedAddressId ?? addressProvider.defaultAddress?.id,
+              // ignore: deprecated_member_use
+              onChanged: (value) {
+                setState(() => _selectedAddressId = value);
+              },
+            );
+          }),
         ],
-      );
-    }
-
-    return Column(
-      children: [
-        ...addressProvider.addresses.map((address) {
-          // ignore: deprecated_member_use
-          return RadioListTile<String>(
-            title: Text(address.title),
-            subtitle: Text('${address.street}, ${address.city}'),
-            value: address.id,
-            // ignore: deprecated_member_use
-            groupValue: _selectedAddressId ?? addressProvider.defaultAddress?.id,
-            // ignore: deprecated_member_use
-            onChanged: (value) {
-              setState(() => _selectedAddressId = value);
-            },
-          );
-        }),
         const Divider(),
         TextButton.icon(
           onPressed: () => context.push(Routes.addresses),
@@ -221,6 +231,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        CustomTextField(
+          controller: _orderNotesController,
+          label: 'Order Notes (Optional)',
+          hint: 'Any special instructions for the vendor?',
+          maxLines: 2,
+        ),
+        const SizedBox(height: 16),
         const Text('Items Order Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
         ...cartProvider.items.map((item) => Padding(
@@ -273,6 +290,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     AddressProvider addressProvider,
     CustomerOrderProvider orderProvider,
     AuthProvider authProvider,
+    ShopProvider shopProvider,
   ) async {
     final user = authProvider.currentUser;
     if (user == null) return;
@@ -285,11 +303,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       // Group items by shopId as OrderModel is per shop
       final Map<String, List<OrderItemModel>> itemsByShop = {};
       final Map<String, String> shopNames = {};
+      final Map<String, String> vendorIds = {};
 
       for (var item in cartProvider.items) {
         if (!itemsByShop.containsKey(item.shopId)) {
           itemsByShop[item.shopId] = [];
-          shopNames[item.shopId] = 'Shop ${item.shopId.substring(0, 5)}'; // Placeholder shop name
+          
+          // Find shop details to get vendorId and shopName
+          try {
+            final shop = shopProvider.shops.firstWhere((s) => s.id == item.shopId);
+            shopNames[item.shopId] = shop.name;
+            vendorIds[item.shopId] = shop.ownerId;
+          } catch (_) {
+             shopNames[item.shopId] = 'Shop ${item.shopId.substring(0, 5)}';
+             vendorIds[item.shopId] = 'vendor_${item.shopId}';
+          }
         }
         itemsByShop[item.shopId]!.add(OrderItemModel(
           id: DateTime.now().millisecondsSinceEpoch.toString() + item.productId,
@@ -309,10 +337,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
         final order = OrderModel(
           id: '', 
-          orderNumber: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+          orderNumber: 'ORD-${DateTime.now().millisecondsSinceEpoch}-${shopId.substring(0, 4)}',
           customerId: user.uid,
           customerName: user.fullName,
-          vendorId: 'vendor_$shopId', // Placeholder vendorId
+          vendorId: vendorIds[shopId]!,
           shopId: shopId,
           shopName: shopNames[shopId]!,
           paymentMethod: _selectedPaymentMethod,
@@ -323,6 +351,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           orderTime: DateTime.now(),
           items: items,
           deliveryAddress: '${address.street}, ${address.city}, ${address.state}',
+          orderNotes: _orderNotesController.text.trim(),
         );
 
         await orderProvider.placeOrder(order);
@@ -337,5 +366,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (!context.mounted) return;
       SnackBarHelper.showError(context, 'Failed to place order: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _orderNotesController.dispose();
+    super.dispose();
   }
 }
