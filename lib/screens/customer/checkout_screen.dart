@@ -57,82 +57,86 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Checkout')),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _currentStep,
-        onStepContinue: () {
-          if (_currentStep < 2) {
-            if (_currentStep == 0) {
-              final address = _selectedAddressId != null
-                  ? addressProvider.addresses.firstWhere((a) => a.id == _selectedAddressId)
-                  : addressProvider.defaultAddress;
-              if (address == null) {
-                SnackBarHelper.showError(context, 'Please select a delivery address');
-                return;
+      body: SingleChildScrollView(
+        child: Stepper(
+          physics: const NeverScrollableScrollPhysics(),
+          // shrinkWrap: true, // Removed: Stepper does not have a shrinkWrap property
+          type: StepperType.vertical,
+          currentStep: _currentStep,
+          onStepContinue: () {
+            if (_currentStep < 2) {
+              if (_currentStep == 0) {
+                final address = _selectedAddressId != null
+                    ? addressProvider.addresses.firstWhere((a) => a.id == _selectedAddressId)
+                    : addressProvider.defaultAddress;
+                if (address == null) {
+                  SnackBarHelper.showError(context, 'Please select a delivery address');
+                  return;
+                }
+                _selectedAddressId = address.id;
               }
-              _selectedAddressId = address.id;
+              setState(() => _currentStep += 1);
+            } else {
+              _placeOrder(context, cartProvider, addressProvider, orderProvider, authProvider, shopProvider);
             }
-            setState(() => _currentStep += 1);
-          } else {
-            _placeOrder(context, cartProvider, addressProvider, orderProvider, authProvider, shopProvider);
-          }
-        },
-        onStepCancel: () {
-          if (_currentStep > 0) {
-            setState(() => _currentStep -= 1);
-          } else {
-            context.pop();
-          }
-        },
-        controlsBuilder: (context, controls) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: PrimaryButton(
-                    text: _currentStep == 2 ? 'Place Order' : 'Continue',
-                    onPressed: controls.onStepContinue!,
-                    isLoading: orderProvider.isLoading,
-                  ),
-                ),
-                if (_currentStep > 0) ...[
-                  const SizedBox(width: 12),
+          },
+          onStepCancel: () {
+            if (_currentStep > 0) {
+              setState(() => _currentStep -= 1);
+            } else {
+              context.pop();
+            }
+          },
+          controlsBuilder: (context, controls) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                children: [
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: controls.onStepCancel,
-                      child: const Text('Back'),
+                    child: PrimaryButton(
+                      text: _currentStep == 2 ? 'Place Order' : 'Continue',
+                      onPressed: controls.onStepContinue!,
+                      isLoading: orderProvider.isLoading,
                     ),
                   ),
+                  if (_currentStep > 0) ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: controls.onStepCancel,
+                        child: const Text('Back'),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
+            );
+          },
+          steps: [
+            Step(
+              title: const Text('Address'),
+              isActive: _currentStep >= 0,
+              state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+              content: _buildAddressSelection(addressProvider, authProvider),
             ),
-          );
-        },
-        steps: [
-          Step(
-            title: const Text('Address'),
-            isActive: _currentStep >= 0,
-            state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-            content: _buildAddressSelection(addressProvider, authProvider),
-          ),
-          Step(
-            title: const Text('Payment'),
-            isActive: _currentStep >= 1,
-            state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-            content: _buildPaymentMethod(),
-          ),
-          Step(
-            title: const Text('Summary'),
-            isActive: _currentStep >= 2,
-            state: _currentStep > 2 ? StepState.complete : StepState.indexed,
-            content: _buildOrderSummary(cartProvider, addressProvider),
-          ),
-        ],
+            Step(
+              title: const Text('Payment'),
+              isActive: _currentStep >= 1,
+              state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+              content: _buildPaymentMethod(),
+            ),
+            Step(
+              title: const Text('Summary'),
+              isActive: _currentStep >= 2,
+              state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+              content: _buildOrderSummary(cartProvider, addressProvider),
+            ),
+          ],
+        ),
       ),
     );
   }

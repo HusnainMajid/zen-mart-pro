@@ -67,82 +67,88 @@ class _AdminDashboardState extends State<AdminDashboard> {
               LayoutBuilder(
                 builder: (context, constraints) {
                   int crossAxisCount = constraints.maxWidth > 900 ? 4 : (constraints.maxWidth > 600 ? 3 : 2);
-                  return GridView.count(
+                  return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.3,
-                    children: [
-                      Consumer<VendorProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Vendors',
-                          count: p.vendors.length.toString(),
-                          icon: Icons.people,
-                          color: Colors.blue,
-                          isLoading: p.isLoading,
-                          onTap: () => context.push(Routes.vendors),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.3,
+                    ),
+                    itemCount: 7,
+                    itemBuilder: (context, index) {
+                      final items = [
+                        Consumer<VendorProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Vendors',
+                            count: p.vendors.length.toString(),
+                            icon: Icons.people,
+                            color: Colors.blue,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.vendors),
+                          ),
                         ),
-                      ),
-                      Consumer<ShopProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Shops',
-                          count: p.shops.length.toString(),
-                          icon: Icons.store,
-                          color: Colors.green,
-                          isLoading: p.isLoading,
-                          onTap: () => context.push(Routes.shops),
+                        Consumer<ShopProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Shops',
+                            count: p.shops.length.toString(),
+                            icon: Icons.store,
+                            color: Colors.green,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.shops),
+                          ),
                         ),
-                      ),
-                      Consumer<CustomerProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Customers',
-                          count: p.customers.length.toString(),
-                          icon: Icons.person_pin,
-                          color: Colors.orange,
-                          isLoading: p.isLoading,
-                          onTap: () => context.push(Routes.customers),
+                        Consumer<CustomerProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Customers',
+                            count: p.customers.length.toString(),
+                            icon: Icons.person_pin,
+                            color: Colors.orange,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.customers),
+                          ),
                         ),
-                      ),
-                      Consumer<RiderProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Riders',
-                          count: p.riders.length.toString(),
-                          icon: Icons.delivery_dining,
-                          color: Colors.purple,
-                          isLoading: p.isLoading,
-                          onTap: () => context.push(Routes.riders),
+                        Consumer<RiderProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Riders',
+                            count: p.riders.length.toString(),
+                            icon: Icons.delivery_dining,
+                            color: Colors.purple,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.riders),
+                          ),
                         ),
-                      ),
-                      Consumer<AdminOrderProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Orders',
-                          count: p.totalOrdersCount.toString(),
-                          icon: Icons.receipt_long,
-                          color: Colors.indigo,
-                          isLoading: p.isLoading,
-                          onTap: () => context.push(Routes.allOrders),
+                        Consumer<AdminOrderProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Orders',
+                            count: p.totalOrdersCount.toString(),
+                            icon: Icons.receipt_long,
+                            color: Colors.indigo,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.allOrders),
+                          ),
                         ),
-                      ),
-                      Consumer<AdminOrderProvider>(
-                        builder: (context, p, _) => _SummaryCard(
-                          title: 'Total Revenue',
-                          count: CurrencyFormatter.format(p.totalRevenue),
-                          icon: Icons.attach_money,
-                          color: Colors.teal,
-                          isLoading: p.isLoading,
+                        Consumer<AdminOrderProvider>(
+                          builder: (context, p, _) => _SummaryCard(
+                            title: 'Total Revenue',
+                            count: CurrencyFormatter.format(p.totalRevenue),
+                            icon: Icons.attach_money,
+                            color: Colors.teal,
+                            isLoading: p.isLoading,
+                            onTap: () => context.push(Routes.analytics),
+                          ),
+                        ),
+                        _SummaryCard(
+                          title: 'System Analytics',
+                          count: 'View',
+                          icon: Icons.analytics,
+                          color: Colors.blueGrey,
                           onTap: () => context.push(Routes.analytics),
                         ),
-                      ),
-                      _SummaryCard(
-                        title: 'System Analytics',
-                        count: 'View',
-                        icon: Icons.analytics,
-                        color: Colors.blueGrey,
-                        onTap: () => context.push(Routes.analytics),
-                      ),
-                    ],
+                      ];
+                      return items[index];
+                    },
                   );
                 },
               ),
@@ -154,32 +160,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  _QuickActionButton(
-                    icon: Icons.add_business,
-                    label: 'Add Shop',
-                    onTap: () => context.push(Routes.shops),
-                  ),
-                  const SizedBox(width: 12),
-                  _QuickActionButton(
-                    icon: Icons.person_add,
-                    label: 'Add Vendor',
-                    onTap: () => context.push(Routes.vendors),
-                  ),
-                  const SizedBox(width: 12),
-                  _QuickActionButton(
-                    icon: Icons.analytics,
-                    label: 'Analytics',
-                    onTap: () => context.push(Routes.analytics),
-                  ),
-                  const SizedBox(width: 12),
-                  _QuickActionButton(
-                    icon: Icons.shopping_bag,
-                    label: 'Orders',
-                    onTap: () => context.push(Routes.allOrders),
-                  ),
-                ],
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _QuickActionButton(
+                      icon: Icons.add_business,
+                      label: 'Add Shop',
+                      onTap: () => context.push(Routes.shops),
+                    ),
+                    const SizedBox(width: 12),
+                    _QuickActionButton(
+                      icon: Icons.person_add,
+                      label: 'Add Vendor',
+                      onTap: () => context.push(Routes.vendors),
+                    ),
+                    const SizedBox(width: 12),
+                    _QuickActionButton(
+                      icon: Icons.analytics,
+                      label: 'Analytics',
+                      onTap: () => context.push(Routes.analytics),
+                    ),
+                    const SizedBox(width: 12),
+                    _QuickActionButton(
+                      icon: Icons.shopping_bag,
+                      label: 'Orders',
+                      onTap: () => context.push(Routes.allOrders),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 32),
               Text(
@@ -265,18 +274,20 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 child: Icon(icon, size: 24, color: color),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               if (isLoading)
                 const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
               else
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    count,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: color,
-                        ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      count,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
+                    ),
                   ),
                 ),
               const SizedBox(height: 4),
@@ -286,7 +297,7 @@ class _SummaryCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: Colors.grey[700],
                   fontWeight: FontWeight.w500,
                 ),
@@ -308,23 +319,22 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor.withAlpha(25),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).primaryColor.withAlpha(75)),
+      ),
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withAlpha(25),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).primaryColor.withAlpha(75)),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: Theme.of(context).primaryColor),
-              const SizedBox(height: 8),
-              Text(label, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
-            ],
-          ),
+        child: Column(
+          children: [
+            Icon(icon, color: Theme.of(context).primaryColor),
+            const SizedBox(height: 8),
+            Text(label, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+          ],
         ),
       ),
     );

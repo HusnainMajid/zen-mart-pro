@@ -98,16 +98,17 @@ class _WishlistItemCard extends StatelessWidget {
               children: [
                 Text(
                   item.name,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Rs. ${item.price.toStringAsFixed(2)}',
+                  'Rs. ${item.price.toInt()}',
+                  maxLines: 1,
                   style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                const Spacer(),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

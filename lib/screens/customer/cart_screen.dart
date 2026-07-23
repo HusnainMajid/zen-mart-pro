@@ -54,64 +54,68 @@ class CartScreen extends StatelessWidget {
           return Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: cartProvider.items.length,
-                  itemBuilder: (context, index) {
-                    final item = cartProvider.items[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            const CircleAvatar(
-                              child: Icon(Icons.inventory_2),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                child: SingleChildScrollView( // Add scroll for small screens
+                  child: ListView.builder(
+                    shrinkWrap: true, // Needed when inside SingleChildScrollView
+                    physics: const NeverScrollableScrollPhysics(), // Needed when inside SingleChildScrollView
+                    padding: const EdgeInsets.all(16),
+                    itemCount: cartProvider.items.length,
+                    itemBuilder: (context, index) {
+                      final item = cartProvider.items[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const CircleAvatar(
+                                child: Icon(Icons.inventory_2),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.name,
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      CurrencyFormatter.format(item.price),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
                                 children: [
-                                  Text(
-                                    item.name,
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                  IconButton(
+                                    onPressed: () => cartProvider.updateQuantity(
+                                        item.productId, item.quantity - 1),
+                                    icon: const Icon(Icons.remove_circle_outline),
                                   ),
                                   Text(
-                                    CurrencyFormatter.format(item.price),
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                    item.quantity.toString(),
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  IconButton(
+                                    onPressed: () => cartProvider.updateQuantity(
+                                        item.productId, item.quantity + 1),
+                                    icon: const Icon(Icons.add_circle_outline),
                                   ),
                                 ],
                               ),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () => cartProvider.updateQuantity(
-                                      item.productId, item.quantity - 1),
-                                  icon: const Icon(Icons.remove_circle_outline),
-                                ),
-                                Text(
-                                  item.quantity.toString(),
-                                  style: Theme.of(context).textTheme.titleMedium,
-                                ),
-                                IconButton(
-                                  onPressed: () => cartProvider.updateQuantity(
-                                      item.productId, item.quantity + 1),
-                                  icon: const Icon(Icons.add_circle_outline),
-                                ),
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               _buildPriceBreakdown(context, cartProvider),

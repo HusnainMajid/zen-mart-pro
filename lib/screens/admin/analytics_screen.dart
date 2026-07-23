@@ -84,7 +84,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Widget _buildTopCards(AnalyticsModel analytics) {
-    final currencyFormat = NumberFormat.currency(symbol: r'$', decimalDigits: 2);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_PK',
+      symbol: 'Rs. ',
+      decimalDigits: 0,
+    );
     
     return LayoutBuilder(
       builder: (context, constraints) {

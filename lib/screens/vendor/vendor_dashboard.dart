@@ -12,6 +12,7 @@ import '../../shared/widgets/error_widget.dart';
 import '../../shared/widgets/empty_state_widget.dart';
 import '../../core/routes/routes.dart';
 import 'package:intl/intl.dart';
+import '../../utils/currency_formatter.dart';
 
 class VendorDashboard extends StatefulWidget {
   const VendorDashboard({super.key});
@@ -247,43 +248,25 @@ class _VendorDashboardState extends State<VendorDashboard> {
     final stats = provider.stats;
     if (stats == null) return const SizedBox.shrink();
 
-    return GridView.count(
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: isTablet ? 4 : 2,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard(
-          'Total Products', 
-          stats.totalProducts.toString(), 
-          Icons.inventory_2, 
-          Colors.blue,
-          onTap: () => context.push(Routes.vendorProducts),
-        ),
-        _buildStatCard(
-          'Categories', 
-          stats.totalCategories.toString(), 
-          Icons.category, 
-          Colors.orange,
-          onTap: () => context.push(Routes.vendorCategories),
-        ),
-        _buildStatCard(
-          'Pending Orders', 
-          stats.pendingOrders.toString(), 
-          Icons.pending_actions, 
-          Colors.red,
-          onTap: () => context.push(Routes.vendorOrders),
-        ),
-        _buildStatCard(
-          'Revenue Today', 
-          '\$${stats.revenueToday.toStringAsFixed(2)}', 
-          Icons.today, 
-          Colors.green,
-          onTap: () => context.push(Routes.vendorReports),
-        ),
-      ],
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isTablet ? 4 : 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.2, // Adjusted for better text fitting
+      ),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        final items = [
+          _buildStatCard('Total Products', stats.totalProducts.toString(), Icons.inventory_2, Colors.blue, onTap: () => context.push(Routes.vendorProducts)),
+          _buildStatCard('Categories', stats.totalCategories.toString(), Icons.category, Colors.orange, onTap: () => context.push(Routes.vendorCategories)),
+          _buildStatCard('Pending Orders', stats.pendingOrders.toString(), Icons.pending_actions, Colors.red, onTap: () => context.push(Routes.vendorOrders)),
+          _buildStatCard('Revenue Today', CurrencyFormatter.format(stats.revenueToday), Icons.today, Colors.green, onTap: () => context.push(Routes.vendorReports)),
+        ];
+        return items[index];
+      },
     );
   }
 
@@ -544,7 +527,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '\$${order.total.toStringAsFixed(2)}',
+                        CurrencyFormatter.format(order.total),
                         style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
                       Text(

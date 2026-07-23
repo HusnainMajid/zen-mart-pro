@@ -100,88 +100,91 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                     icon: Icons.store_outlined,
                   )
                 else
-                  SizedBox(
-                    width: double.infinity,
-                    child: PaginatedDataTable(
-                      header: const Text('Shops List'),
-                      columns: [
-                        const DataColumn(label: Text('Icon')),
-                        DataColumn(
-                          label: const Text('Name'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              _sortColumnIndex = columnIndex;
-                              _isAscending = ascending;
-                            });
-                          },
-                        ),
-                        DataColumn(
-                          label: const Text('Vendor ID'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              _sortColumnIndex = columnIndex;
-                              _isAscending = ascending;
-                            });
-                          },
-                        ),
-                        DataColumn(
-                          label: const Text('Status'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              _sortColumnIndex = columnIndex;
-                              _isAscending = ascending;
-                            });
-                          },
-                        ),
-                        const DataColumn(label: Text('Products')),
-                        const DataColumn(label: Text('Orders')),
-                        DataColumn(
-                          label: const Text('Created Date'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              _sortColumnIndex = columnIndex;
-                              _isAscending = ascending;
-                            });
-                          },
-                        ),
-                        const DataColumn(label: Text('Action')),
-                      ],
-                      source: _ShopDataSource(
-                        shops: filteredShops,
-                        productProvider: productProvider,
-                        orderProvider: orderProvider,
-                        onViewDetails: (shop) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text(shop.name),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Vendor ID: ${shop.ownerId}'),
-                                  const SizedBox(height: 8),
-                                  Text('Status: ${shop.status.toUpperCase()}'),
-                                  const SizedBox(height: 8),
-                                  Text('Address: ${shop.address}'),
-                                  const SizedBox(height: 8),
-                                  Text('Created: ${DateFormatter.formatFullDate(shop.createdAt)}'),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width > 800 ? MediaQuery.of(context).size.width - 32 : 800,
+                      child: PaginatedDataTable(
+                        header: const Text('Shops List'),
+                        columns: [
+                          const DataColumn(label: Text('Icon')),
+                          DataColumn(
+                            label: const Text('Name'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                _sortColumnIndex = columnIndex;
+                                _isAscending = ascending;
+                              });
+                            },
+                          ),
+                          DataColumn(
+                            label: const Text('Vendor ID'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                _sortColumnIndex = columnIndex;
+                                _isAscending = ascending;
+                              });
+                            },
+                          ),
+                          DataColumn(
+                            label: const Text('Status'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                _sortColumnIndex = columnIndex;
+                                _isAscending = ascending;
+                              });
+                            },
+                          ),
+                          const DataColumn(label: Text('Products')),
+                          const DataColumn(label: Text('Orders')),
+                          DataColumn(
+                            label: const Text('Created Date'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                _sortColumnIndex = columnIndex;
+                                _isAscending = ascending;
+                              });
+                            },
+                          ),
+                          const DataColumn(label: Text('Action')),
+                        ],
+                        source: _ShopDataSource(
+                          shops: filteredShops,
+                          productProvider: productProvider,
+                          orderProvider: orderProvider,
+                          onViewDetails: (shop) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(shop.name),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Vendor ID: ${shop.ownerId}'),
+                                    const SizedBox(height: 8),
+                                    Text('Status: ${shop.status.toUpperCase()}'),
+                                    const SizedBox(height: 8),
+                                    Text('Address: ${shop.address}'),
+                                    const SizedBox(height: 8),
+                                    Text('Created: ${DateFormatter.formatFullDate(shop.createdAt)}'),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Close'),
+                                  ),
                                 ],
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Close'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
+                        rowsPerPage: filteredShops.length > 10 ? 10 : filteredShops.isEmpty ? 1 : filteredShops.length,
+                        showCheckboxColumn: false,
+                        sortColumnIndex: _sortColumnIndex,
+                        sortAscending: _isAscending,
                       ),
-                      rowsPerPage: filteredShops.length > 10 ? 10 : filteredShops.isEmpty ? 1 : filteredShops.length,
-                      showCheckboxColumn: false,
-                      sortColumnIndex: _sortColumnIndex,
-                      sortAscending: _isAscending,
                     ),
                   ),
               ],

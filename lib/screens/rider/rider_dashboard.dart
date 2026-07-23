@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/rider_order_provider.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/currency_formatter.dart';
 
 class RiderDashboard extends StatefulWidget {
   const RiderDashboard({super.key});
@@ -193,7 +194,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
           children: [
             _buildStatCard(context, 'Active Orders', provider.activeDeliveriesCount.toString(), Icons.shopping_basket_outlined, Colors.orange),
             _buildStatCard(context, 'Delivered', provider.completedDeliveriesCount.toString(), Icons.task_alt, Colors.green),
-            _buildStatCard(context, 'Earnings', '\$${provider.totalEarnings.toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, Colors.blue),
+            _buildStatCard(context, 'Earnings', CurrencyFormatter.format(provider.totalEarnings), Icons.account_balance_wallet_outlined, Colors.blue),
             _buildStatCard(context, 'Rating', '4.8', Icons.stars_outlined, Colors.purple),
           ],
         );
