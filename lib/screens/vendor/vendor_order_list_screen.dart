@@ -125,7 +125,7 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: Theme.of(context).dividerColor.withAlpha(50)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -153,12 +153,12 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
                     const SizedBox(height: 4),
                     Text(
                       order.customerName,
-                      style: TextStyle(color: Colors.grey[700]),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       DateFormat('MMM dd, yyyy • hh:mm a').format(order.orderTime),
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                      style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
                     ),
                   ],
                 ),
@@ -205,7 +205,7 @@ class _VendorOrderListScreenState extends State<VendorOrderListScreen> {
       case 'shipped': return Colors.blue;
       case 'delivered': return Colors.green;
       case 'cancelled': return Colors.red;
-      default: return Colors.grey;
+      default: return Theme.of(context).colorScheme.outline;
     }
   }
 }

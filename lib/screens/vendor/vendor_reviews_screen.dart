@@ -83,7 +83,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: Theme.of(context).dividerColor.withAlpha(50)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -106,7 +106,10 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text('$totalReviews reviews', style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  '$totalReviews reviews',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
               ],
             ),
             const SizedBox(width: 24),
@@ -124,7 +127,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                         Expanded(
                           child: LinearProgressIndicator(
                             value: percentage,
-                            backgroundColor: Colors.grey[200],
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
                             minHeight: 8,
                             borderRadius: BorderRadius.circular(4),
@@ -153,7 +156,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: Theme.of(context).dividerColor.withAlpha(50)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -169,7 +172,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                 ),
                 Text(
                   DateFormat('MMM dd, yyyy').format(review.createdAt),
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
                 ),
               ],
             ),

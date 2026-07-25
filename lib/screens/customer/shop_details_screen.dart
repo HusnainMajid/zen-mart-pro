@@ -41,8 +41,8 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                 style: const TextStyle(color: Colors.white),
               ),
               background: Container(
-                color: Colors.blue,
-                child: const Icon(Icons.store, size: 64, color: Colors.white24),
+                color: Theme.of(context).colorScheme.primary,
+                child: Icon(Icons.store, size: 64, color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.24)),
               ),
             ),
           ),
@@ -87,17 +87,17 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                      Icon(Icons.location_on, size: 16, color: Theme.of(context).colorScheme.outline),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(widget.shop.address, style: const TextStyle(color: Colors.grey))),
+                      Expanded(child: Text(widget.shop.address, style: Theme.of(context).textTheme.bodySmall)),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.phone, size: 16, color: Colors.grey),
+                      Icon(Icons.phone, size: 16, color: Theme.of(context).colorScheme.outline),
                       const SizedBox(width: 8),
-                      Text(widget.shop.contact, style: const TextStyle(color: Colors.grey)),
+                      Text(widget.shop.contact, style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -184,8 +184,8 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                 children: [
                   Container(
                     width: double.infinity,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.inventory_2, size: 48, color: Colors.grey),
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    child: Icon(Icons.inventory_2, size: 48, color: Theme.of(context).colorScheme.outline),
                   ),
                   if (product?.discountPrice != null)
                     Positioned(
@@ -222,9 +222,9 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                     children: [
                       Text(
                         CurrencyFormatter.format(product?.discountPrice ?? product?.price ?? 0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: Theme.of(context).colorScheme.primary,
                           fontSize: 14,
                         ),
                       ),

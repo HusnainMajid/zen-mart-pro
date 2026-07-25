@@ -35,9 +35,9 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey[400]),
+                  Icon(Icons.shopping_cart_outlined, size: 80, color: Theme.of(context).disabledColor),
                   const SizedBox(height: 16),
-                  const Text('Your cart is empty', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text('Your cart is empty', style: TextStyle(fontSize: 18, color: Theme.of(context).hintColor)),
                   const SizedBox(height: 24),
                   SizedBox(
                     width: 200,

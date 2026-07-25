@@ -27,9 +27,19 @@ class WishlistScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, size: 64, color: Colors.grey[400]),
+                  Icon(
+                    Icons.favorite_border,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline.withAlpha(127),
+                  ),
                   const SizedBox(height: 16),
-                  const Text('Your wishlist is empty', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(
+                    'Your wishlist is empty',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -72,14 +82,14 @@ class _WishlistItemCard extends StatelessWidget {
               Container(
                 height: 120,
                 width: double.infinity,
-                color: Colors.grey[200],
-                child: const Icon(Icons.inventory_2, color: Colors.grey),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(100),
+                child: Icon(Icons.inventory_2, color: Theme.of(context).colorScheme.outline),
               ),
               Positioned(
                 top: 5,
                 right: 5,
                 child: CircleAvatar(
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   radius: 15,
                   child: IconButton(
                     icon: const Icon(Icons.close, size: 15, color: Colors.red),

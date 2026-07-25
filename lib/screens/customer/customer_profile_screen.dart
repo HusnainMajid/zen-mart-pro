@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../core/routes/routes.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
@@ -90,6 +91,12 @@ class CustomerProfileScreen extends StatelessWidget {
             ),
             _buildOptionTile(
               context,
+              icon: Icons.palette_outlined,
+              title: 'Theme Settings',
+              onTap: () => _showThemeDialog(context),
+            ),
+            _buildOptionTile(
+              context,
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
@@ -126,6 +133,48 @@ class CustomerProfileScreen extends StatelessWidget {
       ),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,
+    );
+  }
+
+  void _showThemeDialog(BuildContext context) {
+    final themeProvider = context.read<ThemeProvider>();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose Theme'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('System Default'),
+              value: ThemeMode.system,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) themeProvider.setThemeMode(mode);
+                Navigator.pop(context);
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Light'),
+              value: ThemeMode.light,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) themeProvider.setThemeMode(mode);
+                Navigator.pop(context);
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Dark'),
+              value: ThemeMode.dark,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) themeProvider.setThemeMode(mode);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 

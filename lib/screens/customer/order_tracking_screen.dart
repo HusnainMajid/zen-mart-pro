@@ -165,7 +165,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: isDone ? Colors.green : Colors.grey[300],
+                      color: isDone ? Colors.green : Theme.of(context).disabledColor,
                       shape: BoxShape.circle,
                       border: isCurrent ? Border.all(color: Colors.green, width: 4) : null,
                     ),
@@ -177,7 +177,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                     Expanded(
                       child: Container(
                         width: 2,
-                        color: index < currentIdx ? Colors.green : Colors.grey[300],
+                        color: index < currentIdx ? Colors.green : Theme.of(context).disabledColor,
                       ),
                     ),
                 ],
@@ -193,14 +193,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                         steps[index]['title']!,
                         style: TextStyle(
                           fontWeight: isDone ? FontWeight.bold : FontWeight.normal,
-                          color: isDone ? Colors.black : Colors.grey,
+                          color: isDone ? Theme.of(context).colorScheme.onSurface : Theme.of(context).hintColor,
                         ),
                       ),
                       Text(
                         steps[index]['subtitle']!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDone ? Colors.black54 : Colors.grey,
+                          color: isDone ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).hintColor,
                         ),
                       ),
                     ],

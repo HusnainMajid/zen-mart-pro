@@ -39,7 +39,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   leading: const Icon(Icons.search),
                   onChanged: (val) => setState(() => _searchQuery = val),
                   elevation: WidgetStateProperty.all(0),
-                  backgroundColor: WidgetStateProperty.all(Colors.white.withAlpha(50)),
+                  backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(100)),
                 ),
                 const SizedBox(height: 8),
                 SingleChildScrollView(
@@ -73,9 +73,19 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.receipt_long_outlined, size: 80, color: Colors.grey[400]),
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 80,
+                    color: Theme.of(context).colorScheme.outline.withAlpha(127),
+                  ),
                   const SizedBox(height: 16),
-                  const Text('No orders found', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(
+                    'No orders found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -190,7 +200,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         color = Colors.red;
         break;
       default:
-        color = Colors.grey;
+        color = Theme.of(context).colorScheme.outline;
     }
 
     return Container(

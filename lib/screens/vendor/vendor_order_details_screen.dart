@@ -69,7 +69,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
           const Spacer(),
           Text(
             DateFormat('MMM dd, hh:mm a').format(order.orderTime),
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
           ),
         ],
       ),
@@ -89,17 +89,17 @@ class VendorOrderDetailsScreen extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey[300]!),
+            side: BorderSide(color: Theme.of(context).dividerColor),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                _buildInfoRow(Icons.person_outline, 'Customer Name', order.customerName),
+                _buildInfoRow(context, Icons.person_outline, 'Customer Name', order.customerName),
                 const Divider(height: 24),
-                _buildInfoRow(Icons.location_on_outlined, 'Delivery Address', order.deliveryAddress),
+                _buildInfoRow(context, Icons.location_on_outlined, 'Delivery Address', order.deliveryAddress),
                 const Divider(height: 24),
-                _buildInfoRow(Icons.payment_outlined, 'Payment Method', order.paymentMethod.toUpperCase()),
+                _buildInfoRow(context, Icons.payment_outlined, 'Payment Method', order.paymentMethod.toUpperCase()),
               ],
             ),
           ),
@@ -108,17 +108,17 @@ class VendorOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.grey[600]),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.outline),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+              Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color)),
               Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
             ],
           ),
@@ -138,7 +138,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
               'Order Items',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Text('${order.items.length} items', style: TextStyle(color: Colors.grey[600])),
+            Text('${order.items.length} items', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
           ],
         ),
         const SizedBox(height: 12),
@@ -148,7 +148,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.grey[300]!),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 child: ListTile(
                   title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.w500)),
@@ -177,7 +177,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
         const SizedBox(height: 12),
         Card(
           elevation: 0,
-          color: Colors.grey[50],
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -185,11 +185,11 @@ class VendorOrderDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                _buildSummaryRow('Subtotal', subtotal),
+                _buildSummaryRow(context, 'Subtotal', subtotal),
                 const SizedBox(height: 8),
-                _buildSummaryRow('Tax', order.tax),
+                _buildSummaryRow(context, 'Tax', order.tax),
                 const SizedBox(height: 8),
-                _buildSummaryRow('Discount', -order.discount, color: Colors.green),
+                _buildSummaryRow(context, 'Discount', -order.discount, color: Colors.green),
                 const Divider(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,7 +198,7 @@ class VendorOrderDetailsScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
                       '\$${order.total.toStringAsFixed(2)}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
@@ -210,11 +210,11 @@ class VendorOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryRow(String label, double value, {Color? color}) {
+  Widget _buildSummaryRow(BuildContext context, String label, double value, {Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[700])),
+        Text(label, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
         Text(
           '\$${value.abs().toStringAsFixed(2)}',
           style: TextStyle(fontWeight: FontWeight.w500, color: color),
@@ -255,10 +255,10 @@ class VendorOrderDetailsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(13),
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),

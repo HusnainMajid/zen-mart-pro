@@ -158,14 +158,14 @@ class _VendorDashboardState extends State<VendorDashboard> {
                     _shop?.address ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7)),
                   ),
                 ],
               ),
             ),
             IconButton(
               onPressed: () => context.push(Routes.shopProfile),
-              icon: const Icon(Icons.edit, color: Colors.white),
+              icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
               tooltip: 'Edit Profile',
             ),
           ],
@@ -274,11 +274,11 @@ class _VendorDashboardState extends State<VendorDashboard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -333,7 +333,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.grey[200]!),
+            side: BorderSide(color: Theme.of(context).dividerColor),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -369,13 +369,13 @@ class _VendorDashboardState extends State<VendorDashboard> {
                             FlSpot(6, 4),
                           ],
                           isCurved: true,
-                          color: Colors.blue,
+                          color: Theme.of(context).colorScheme.primary,
                           barWidth: 4,
                           isStrokeCapRound: true,
                           dotData: const FlDotData(show: false),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Colors.blue.withAlpha(51),
+                            color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
                           ),
                         ),
                       ],
@@ -418,11 +418,11 @@ class _VendorDashboardState extends State<VendorDashboard> {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey[100]!),
+              side: BorderSide(color: Theme.of(context).dividerColor),
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Center(child: Text('All products are in good stock', style: TextStyle(color: Colors.grey))),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(child: Text('All products are in good stock', style: TextStyle(color: Theme.of(context).hintColor))),
             ),
           )
         else ...[
@@ -456,10 +456,10 @@ class _VendorDashboardState extends State<VendorDashboard> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.inventory_2, color: Colors.grey, size: 24),
+          child: Icon(Icons.inventory_2, color: Theme.of(context).colorScheme.outline, size: 24),
         ),
         title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         subtitle: Text('SKU: ${product.sku}', style: const TextStyle(fontSize: 12)),

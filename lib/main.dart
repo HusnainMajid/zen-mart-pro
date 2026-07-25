@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'core/theme/theme.dart';
+import 'package:zen_mart_pro/core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
 import 'providers/auth_provider.dart';
 import 'providers/session_provider.dart';
@@ -26,6 +26,7 @@ import 'providers/address_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/customer_order_provider.dart';
 import 'providers/rider_order_provider.dart';
+import 'package:zen_mart_pro/providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +106,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => CustomerOrderProvider()),
         ChangeNotifierProvider(create: (_) => RiderOrderProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProxyProvider<AuthProvider, SessionProvider>(
           create: (context) {
             final sessionProvider = SessionProvider(context.read<AuthProvider>());
@@ -153,13 +155,14 @@ class _ZenMartAppState extends State<ZenMartApp> {
   @override
   Widget build(BuildContext context) {
     final router = context.read<AppRouter>().router;
+    final themeProvider = context.watch<ThemeProvider>();
 
     return MaterialApp.router(
       title: 'Zen Mart Pro',
       debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       routerConfig: router,
     );
   }

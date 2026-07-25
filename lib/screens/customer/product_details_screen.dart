@@ -46,31 +46,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             expandedHeight: 250,
             pinned: true,
             leading: CircleAvatar(
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
             actions: [
               CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 child: IconButton(
                   icon: Icon(
                     isInWishlist ? Icons.favorite : Icons.favorite_border,
-                    color: isInWishlist ? Colors.red : Colors.black,
+                    color: isInWishlist ? Colors.red : Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () => _toggleWishlist(wishlistProvider),
                 ),
               ),
               CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 child: IconButton(
                   icon: Consumer<CartProvider>(
                     builder: (context, cart, _) => Badge.count(
                       count: cart.items.length,
                       isLabelVisible: cart.items.isNotEmpty,
-                      child: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+                      child: Icon(Icons.shopping_cart_outlined, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   onPressed: () => context.push(Routes.cart),
@@ -116,7 +116,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       Text(
                         CurrencyFormatter.format(widget.product.discountPrice ?? widget.product.price),
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
                       ),
                       if (widget.product.discountPrice != null) ...[
                         const SizedBox(width: 10),
@@ -144,7 +144,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   const SizedBox(height: 8),
                   Text(
                     widget.product.description,
-                    style: TextStyle(color: Colors.grey[700], height: 1.5),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
                   ),
                   const SizedBox(height: 24),
                   
@@ -152,7 +152,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -262,7 +262,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

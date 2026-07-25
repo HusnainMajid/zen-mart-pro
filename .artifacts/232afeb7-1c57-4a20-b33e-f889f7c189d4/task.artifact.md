@@ -1,0 +1,8 @@
+- [ ] Fix Dark Theme visibility in `lib/screens/admin/admin_dashboard.dart`
+    - [ ] Update `_SummaryCard` text colors
+    - [ ] Update `_QuickActionButton` contrast
+- [ ] Fix Dark Theme visibility in `lib/screens/admin/analytics_screen.dart`
+    - [ ] Update `_RevenueChartCard` colors and titles
+    - [ ] Update `_StatCard` theme usage
+    - [ ] Update `_LegendItem` and `_TopListCard` visibility
+- [ ] Verify with `flutter analyze`

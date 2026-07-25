@@ -14,7 +14,10 @@ class NotificationScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => context.read<NotificationProvider>().clearAll(),
-            child: const Text('Clear All', style: TextStyle(color: Colors.white)),
+            child: Text(
+              'Clear All',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+            ),
           ),
         ],
       ),
@@ -33,9 +36,19 @@ class NotificationScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey[400]),
+                  Icon(
+                    Icons.notifications_off_outlined,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline.withAlpha(127),
+                  ),
                   const SizedBox(height: 16),
-                  const Text('No notifications yet', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(
+                    'No notifications yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -49,8 +62,8 @@ class NotificationScreen extends StatelessWidget {
               final notification = provider.notifications[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: _getNotificationColor(notification.type).withAlpha(25),
-                  child: Icon(_getNotificationIcon(notification.type), color: _getNotificationColor(notification.type)),
+                  backgroundColor: _getNotificationColor(context, notification.type).withAlpha(25),
+                  child: Icon(_getNotificationIcon(notification.type), color: _getNotificationColor(context, notification.type)),
                 ),
                 title: Text(
                   notification.title,
@@ -65,7 +78,10 @@ class NotificationScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       DateFormat('MMM dd, yyyy HH:mm').format(notification.createdAt),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -98,14 +114,14 @@ class NotificationScreen extends StatelessWidget {
     }
   }
 
-  Color _getNotificationColor(String type) {
+  Color _getNotificationColor(BuildContext context, String type) {
     switch (type) {
       case 'order':
         return Colors.blue;
       case 'promo':
         return Colors.orange;
       default:
-        return Colors.grey;
+        return Theme.of(context).colorScheme.outline;
     }
   }
 }

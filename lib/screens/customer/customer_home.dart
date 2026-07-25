@@ -263,12 +263,12 @@ class _CustomerHomeState extends State<CustomerHome> {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Colors.grey, size: 12),
+                          Icon(Icons.location_on, color: Theme.of(context).colorScheme.outline, size: 12),
                           const SizedBox(width: 2),
                           Expanded(
                             child: Text(
                               shop?.address ?? '', 
-                              style: const TextStyle(fontSize: 11), 
+                              style: Theme.of(context).textTheme.bodySmall, 
                               maxLines: 1, 
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -348,7 +348,7 @@ class _CustomerHomeState extends State<CustomerHome> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         child: SizedBox(
-          width: 160,
+          width: 175,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -357,8 +357,8 @@ class _CustomerHomeState extends State<CustomerHome> {
                   children: [
                     Container(
                       width: double.infinity,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.inventory_2, size: 48, color: Colors.grey),
+                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      child: Icon(Icons.inventory_2, size: 48, color: Theme.of(context).colorScheme.outline),
                     ),
                     if (product?.discountPrice != null)
                       Positioned(
@@ -379,56 +379,76 @@ class _CustomerHomeState extends State<CustomerHome> {
                   ],
                 ),
               ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product?.name ?? 'Product Name',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            product?.shopName ?? 'Shop Name',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                          ),
-                          const Spacer(),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  CurrencyFormatter.format(product?.discountPrice ?? product?.price ?? 0),
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              if (product?.discountPrice != null) ...[
-                                const SizedBox(width: 4),
-                                Flexible(
-                                  child: Text(
-                                    CurrencyFormatter.format(product!.price),
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      decoration: TextDecoration.lineThrough,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+              Expanded(
+              child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text(
+              product?.name ?? 'Product Name',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              ),
+              ),
+
+              const SizedBox(height: 4),
+
+              Text(
+              product?.shopName ?? 'Shop Name',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+    fontSize: 12,
+    color: Colors.grey.shade600,
+    ),
+    ),
+
+    const Spacer(),
+
+    Row(
+    children: [
+    Expanded(
+    child: Text(
+    CurrencyFormatter.format(
+    product?.discountPrice ?? product?.price ?? 0,
+    ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Theme.of(context).colorScheme.primary,
+    fontSize: 14,
+    ),
+    ),
+    ),
+
+    if (product?.discountPrice != null) ...[
+    const SizedBox(width: 6),
+
+    Expanded(
+    child: Text(
+    CurrencyFormatter.format(product!.price),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    textAlign: TextAlign.end,
+    style: TextStyle(
+    fontSize: 11,
+    decoration: TextDecoration.lineThrough,
+    color: Theme.of(context).colorScheme.outline,
+    ),
+    ),
+    ),
+    ],
+    ],
+    ),
+    ],
+    ),
+    ),
+    ),
             ],
           ),
         ),
@@ -449,21 +469,21 @@ class _CustomerHomeState extends State<CustomerHome> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withAlpha(25),
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.withAlpha(51)),
+                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.delivery_dining, color: Colors.blue),
+                  Icon(Icons.delivery_dining, color: Theme.of(context).colorScheme.primary),
                   const SizedBox(width: 12),
                   Text(
                     'You have $activeOrders active orders',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
                   ),
                   const Spacer(),
-                  const Text('Track', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-                  const Icon(Icons.chevron_right, color: Colors.blue, size: 16),
+                  Text('Track', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                  Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.primary, size: 16),
                 ],
               ),
             ),

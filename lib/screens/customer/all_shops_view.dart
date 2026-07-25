@@ -78,7 +78,7 @@ class _AllShopsViewState extends State<AllShopsView> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
+        side: BorderSide(color: Theme.of(context).dividerColor.withAlpha(50)),
       ),
       child: InkWell(
         onTap: () {
@@ -96,8 +96,8 @@ class _AllShopsViewState extends State<AllShopsView> {
                 child: Container(
                   width: 80,
                   height: 80,
-                  color: Colors.grey[100],
-                  child: const Icon(Icons.store, size: 40, color: Colors.grey),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(100),
+                  child: Icon(Icons.store, size: 40, color: Theme.of(context).colorScheme.outline),
                 ),
               ),
               const SizedBox(width: 16),
@@ -119,7 +119,7 @@ class _AllShopsViewState extends State<AllShopsView> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -132,14 +132,14 @@ class _AllShopsViewState extends State<AllShopsView> {
                           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(Icons.location_on, color: Colors.grey, size: 16),
+                        Icon(Icons.location_on, color: Theme.of(context).colorScheme.outline, size: 16),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             shop?.address ?? 'Location',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                       ],
@@ -147,7 +147,7 @@ class _AllShopsViewState extends State<AllShopsView> {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.outline),
             ],
           ),
         ),

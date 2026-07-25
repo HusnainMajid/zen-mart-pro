@@ -27,9 +27,9 @@ class AddressListScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.location_off_outlined, size: 64, color: Colors.grey[400]),
+                  Icon(Icons.location_off_outlined, size: 64, color: Theme.of(context).disabledColor),
                   const SizedBox(height: 16),
-                  const Text('No addresses found', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text('No addresses found', style: TextStyle(fontSize: 18, color: Theme.of(context).hintColor)),
                 ],
               ),
             );
@@ -191,7 +191,7 @@ class AddressListScreen extends StatelessWidget {
               provider.deleteAddress(id);
               Navigator.pop(context);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ),
         ],
       ),

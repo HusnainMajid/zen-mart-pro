@@ -167,7 +167,7 @@ class _VendorReportsScreenState extends State<VendorReportsScreen> {
               value,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
             ),
-            Text(title, style: TextStyle(fontSize: 11, color: Colors.grey[700])),
+            Text(title, style: TextStyle(fontSize: 11, color: Theme.of(context).textTheme.bodySmall?.color)),
           ],
         ),
       ),
@@ -216,17 +216,24 @@ class _VendorReportsScreenState extends State<VendorReportsScreen> {
   }
 
   static Widget _getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(color: Colors.grey, fontSize: 10);
-    String text;
-    switch (value.toInt()) {
-      case 0: text = 'Mon'; break;
-      case 1: text = 'Tue'; break;
-      case 2: text = 'Wed'; break;
-      case 3: text = 'Thu'; break;
-      case 4: text = 'Fri'; break;
-      default: text = ''; break;
-    }
-    return SideTitleWidget(meta: meta, child: Text(text, style: style));
+    return SideTitleWidget(
+      meta: meta,
+      child: Builder(
+        builder: (context) {
+          final style = TextStyle(color: Theme.of(context).textTheme.labelSmall?.color, fontSize: 10);
+          String text;
+          switch (value.toInt()) {
+            case 0: text = 'Mon'; break;
+            case 1: text = 'Tue'; break;
+            case 2: text = 'Wed'; break;
+            case 3: text = 'Thu'; break;
+            case 4: text = 'Fri'; break;
+            default: text = ''; break;
+          }
+          return Text(text, style: style);
+        }
+      ),
+    );
   }
 
   Widget _buildBestSellers(VendorReportProvider provider) {
@@ -250,7 +257,7 @@ class _VendorReportsScreenState extends State<VendorReportsScreen> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey[300]!),
+            side: BorderSide(color: Theme.of(context).dividerColor),
           ),
           child: ListTile(
             leading: const CircleAvatar(child: Icon(Icons.inventory_2)),
@@ -258,7 +265,7 @@ class _VendorReportsScreenState extends State<VendorReportsScreen> {
             subtitle: Text('Sold: ${product['quantity'] ?? 0} units'),
             trailing: Text(
               '\$${(product['revenue'] ?? 0.0).toStringAsFixed(2)}',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
             ),
           ),
         );

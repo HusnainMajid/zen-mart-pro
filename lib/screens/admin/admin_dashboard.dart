@@ -296,11 +296,12 @@ class _SummaryCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.grey[700],
+                    ),
               ),
             ],
           ),
@@ -319,21 +320,30 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final primaryColor = colorScheme.primary;
+    
     return Container(
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withAlpha(25),
+        color: primaryColor.withAlpha(25),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).primaryColor.withAlpha(75)),
+        border: Border.all(color: primaryColor.withAlpha(75)),
       ),
       child: InkWell(
         onTap: onTap,
         child: Column(
           children: [
-            Icon(icon, color: Theme.of(context).primaryColor),
+            Icon(icon, color: primaryColor),
             const SizedBox(height: 8),
-            Text(label, style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+            Text(
+              label, 
+              style: TextStyle(
+                color: primaryColor, 
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),

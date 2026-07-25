@@ -152,7 +152,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: _shop!.status == 'active' ? Colors.green.withAlpha(26) : Colors.orange.withAlpha(26),
+              color: (_shop!.status == 'active' ? Colors.green : Colors.orange).withAlpha(26),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
@@ -167,7 +167,10 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
         ListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Created Date'),
-          trailing: Text(DateFormat('MMM dd, yyyy').format(_shop!.createdAt)),
+          trailing: Text(
+            DateFormat('MMM dd, yyyy').format(_shop!.createdAt),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
         ),
       ],
     );

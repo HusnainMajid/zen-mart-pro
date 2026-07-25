@@ -236,7 +236,7 @@ class _ProductListItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'SKU: ${product.sku}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -252,9 +252,9 @@ class _ProductListItem extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             '\$${product.discountPrice!.toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               decoration: TextDecoration.lineThrough,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.outline,
                               fontSize: 12,
                             ),
                           ),

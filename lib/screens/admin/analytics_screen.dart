@@ -240,6 +240,9 @@ class _StatCard extends StatelessWidget {
 class _RevenueChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Card(
       elevation: 2,
       child: Padding(
@@ -249,24 +252,41 @@ class _RevenueChartCard extends StatelessWidget {
           children: [
             Text(
               'Revenue Trends',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             SizedBox(
               height: 250,
               child: LineChart(
                 LineChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: const FlTitlesData(
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: theme.dividerColor.withAlpha(50),
+                      strokeWidth: 1,
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: 1,
-                        // getTitlesWidget can be implemented for dates
+                        interval: 2,
+                        getTitlesWidget: (value, meta) {
+                          return SideTitleWidget(
+                            meta: meta,
+                            child: Text(
+                              value.toInt().toString(),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.textTheme.bodySmall?.color?.withAlpha(150),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -283,13 +303,13 @@ class _RevenueChartCard extends StatelessWidget {
                         const FlSpot(12, 7),
                       ],
                       isCurved: true,
-                      color: Theme.of(context).primaryColor,
+                      color: colorScheme.primary,
                       barWidth: 4,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).primaryColor.withAlpha(25),
+                        color: colorScheme.primary.withAlpha(25),
                       ),
                     ),
                   ],
@@ -388,7 +408,10 @@ class _LegendItem extends StatelessWidget {
       children: [
         Container(width: 12, height: 12, color: color),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12)),
+        Text(
+          text, 
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       ],
     );
   }
