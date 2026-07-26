@@ -1,0 +1,51 @@
+workflows:
+  main-workflow:
+    name: Zen Mart Pro Production Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      groups:
+        # Add your keystore and signing groups in Codemagic UI
+        - signing_credentials
+      vars:
+        FLUTTER_VERSION: "stable"
+        XCODE_VERSION: "latest"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Set up environment
+        script: |
+          flutter channel $FLUTTER_VERSION
+          flutter upgrade
+          flutter pub get
+      - name: Flutter Analysis
+        script: |
+          flutter analyze
+      - name: Build Android APK & AAB
+        script: |
+          flutter build apk --release
+          flutter build appbundle --release
+      - name: Build iOS Release
+        script: |
+          # Note: Requires GoogleService-Info.plist to be present in ios/Runner/
+          # For Codemagic, you can use environment variables to inject this file if it's not in git
+          flutter build ios --release --no-codesign
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/ios/iphoneos/*.app
+    publishing:
+      email:
+        recipients:
+          - admin@example.com # Replace with your email
+        notify:
+          success: true
+          failure: true
