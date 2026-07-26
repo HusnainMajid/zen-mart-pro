@@ -1,5 +1,6 @@
-- [x] Update `ios/Podfile` with robust `FLUTTER_ROOT` detection
-- [x] Create `ios/Flutter/Generated.xcconfig` template
-- [x] Create `ios/Flutter/flutter_export_environment.sh` template
-- [x] Verify `.xcconfig` inclusions
-- [x] Run `flutter pub get` and final analysis
+- [x] Delete manually created/hacked iOS configuration files
+- [x] Regenerate official iOS platform files using `flutter create`
+- [x] Update `ios/Podfile` to target iOS 15.0
+- [x] Verify `IPHONEOS_DEPLOYMENT_TARGET` in `project.pbxproj`
+- [x] Run `flutter pub get` to synchronize project state
+- [x] Verify project integrity with `flutter analyze`
