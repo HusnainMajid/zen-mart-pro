@@ -14,15 +14,23 @@ project 'Runner', {
 
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get has been executed."
+
+  # Try to find FLUTTER_ROOT in Generated.xcconfig first
+  if File.exist?(generated_xcode_build_settings_path)
+    File.foreach(generated_xcode_build_settings_path) do |line|
+      matches = line.match(/\AFLUTTER_ROOT=(.*)\z/)
+      return matches[1] if matches
+    end
   end
 
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/\AFLUTTER_ROOT=(.*)\z/)
-    return matches[1] if matches
+  # Fallback to environment variable (common in CI/CD like Codemagic)
+  if ENV['FLUTTER_ROOT']
+    return ENV['FLUTTER_ROOT']
   end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig and rerunning flutter pub get."
+
+  # Final attempt: common flutter path (only for local development if everything else fails)
+  # But we prefer raising an error if we can't find it to avoid confusing build errors later
+  raise "FLUTTER_ROOT not found. Try running 'flutter pub get' or setting the FLUTTER_ROOT environment variable."
 end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'xcode_backend.rb'), flutter_root)

@@ -1,6 +1,5 @@
-- [x] Update iOS deployment target to 15.0 in `project.pbxproj`
-- [x] Create production-ready `Podfile` with iOS 15.0 target
-- [x] Update `Info.plist` with required permissions and URL schemes
-- [x] Configure `codemagic.yaml` for Android and iOS builds
-- [x] Run `flutter analyze` and fix any critical issues
-- [x] Verify iOS configuration integrity
+- [x] Update `ios/Podfile` with robust `FLUTTER_ROOT` detection
+- [x] Create `ios/Flutter/Generated.xcconfig` template
+- [x] Create `ios/Flutter/flutter_export_environment.sh` template
+- [x] Verify `.xcconfig` inclusions
+- [x] Run `flutter pub get` and final analysis
